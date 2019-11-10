@@ -1,7 +1,6 @@
 import pandas as pd
 import numpy as np 
 import missingno as msno
-import seaborn as sns
 import matplotlib.pyplot as plt
 import re
 from sklearn.preprocessing import Imputer
@@ -9,6 +8,11 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn import neighbors
 
+def f(x):
+    aa = x.index(",")
+    return x[:aa]
+def y(x):
+	return str(x)+','
 
 def pre():
 	df = pd.read_csv('appstore_games.csv',thousands = ',')
@@ -25,30 +29,26 @@ def pre():
 	df = df.drop(df.index[b],axis=0)
 
 
-	max_min_scaler = lambda x : (x-np.min(x))/(np.max(x)-np.min(x))
+	max_min_scaler = lambda x : x/1000000
 	df['Size'] = df[['Size']].apply(max_min_scaler)
 	#print(df['Genres'].head(5))
 	#see the NULL data
 	# msno.matrix(df)
 	# plt.show()
 
-	#To see the relationship
-	# sns.pairplot(df, x_vars='Size', y_vars='User Rating Count', height=7, aspect=0.8,kind='reg')
-	# plt.show()
 	df['Genres'] = df['Genres'].str.replace(r"Games,", "")
-	for i in range(len(df)):
-		df.at[i,'Genres'] = df.iloc[i]['Genres'].split(',')[0]
-	
-	#for index,row in df.iterrows():
-		# print(index)
-	#	row['Genres']= re.findall(r"^(.+?),",row['Genres'])
-		# print(row['Genres'])
+	df["Genres"] = df["Genres"].apply(y)
+	df["Genres"] = df["Genres"].apply(f)
+
+
 # 处理类别数据 one-hot encoder
-#1.类别 Primart Genre
+#1.类别 Genres
 
 	gen = pd.DataFrame()
 	gen = pd.get_dummies(df['Genres'],prefix='Genre')
+	# print(gen.to_string())
 	df = pd.concat([df,gen],axis=1)
+	# print(df.head().to_string())
 #2.Age rating
 	age = pd.DataFrame()
 	age = pd.get_dummies(df['Age Rating'],prefix='Age')
