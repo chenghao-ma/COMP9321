@@ -56,7 +56,16 @@ def pre():
 
 	df.to_csv(r'./newdata.csv',index=False,sep=',')	
 def ml():
-	feature_cols = ['User Rating Count', 'Price', 'Size']
+	feature_cols = ['Price', 'Size','Genre_ Action','Genre_ Adventure','Genre_ Board',	'Genre_ Books',\
+	'Genre_ Business',	'Genre_ Card',	'Genre_ Casino'	'Genre_ Casual',	'Genre_ Education'	,'Genre_ Entertainment',	'Genre_ Family'	'Genre_ Finance',\
+	'Genre_ Health & Fitness'	,'Genre_ Lifestyle'	,'Genre_ Magazines & Newspapers',	'Genre_ Medical'	,'Genre_ Music',	'Genre_ Navigation'	,\
+	'Genre_ News',	'Genre_ Photo & Video'	,'Genre_ Productivity','Genre_ Puzzle','Genre_ Racing',\
+	'Genre_ Reference'	,'Genre_ Role Playing'	,'Genre_ Simulation',	'Genre_ Social Networking',\
+	'Genre_ Sports'	'Genre_ Strategy'	'Genre_ Travel'	'Genre_ Trivia'	,'Genre_ Utilities'	'Genre_ Word'	,'Genre_Books',	'Genre_Business',\
+	'Genre_Education'	,'Genre_Entertainment','Genre_Finance'	,'Genre_Food & Drink'	,'Genre_Health & Fitness'	,\
+	'Genre_Lifestyle'	,'Genre_Medical',	'Genre_Music'	,'Genre_Navigation'	,'Genre_News'	,'Genre_Productivity',	\
+	'Genre_Reference',	'Genre_Shopping',	'Genre_Social Networking',	'Genre_Sports'	,'Genre_Stickers'	,'Genre_Travel'	,'Genre_Utilities',\
+	'Age_12+'	,'Age_17+',	'Age_4+'	,'Age_9+']
 	x = df[feature_cols]
 	y = df['Average User Rating']
 	# print(y.shape)
