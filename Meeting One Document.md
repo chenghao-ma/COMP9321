@@ -30,3 +30,8 @@ z5269658 Shoujian Dong: frontend design and development
 
 ##### Project documentation; correctly described use cases using notations, such as sequence diagrams, mock‐ups, or plain natural language; the method is optional. 
 
+Our project will be seperated into two parts: backend and frontend. The backend api will be developed by python Flask framework and the frontend will be developed by ReactJS with Material UI. The UML graph and mock-ups can be found in our github repository.
+
+###### User story:
+
+In a scenario, Elijia is a manager, who is responsible for investigating the market of game planned to develop, can register his own account. After that, with entering the name and password to login the website, the Dashboard webpage will display some important attributes of the top10 17K Mobile Strategy Games currently. Additionally, this webpage will present some different diagrams of various data relationships. And then he presses the button of start engine of predictor at the left side of this page, the next webpage will ask him to provide the detail of game price, size, genre and player age range. Finally, the service will response the predicted downloads to him as the reference data at the bottom of the same page. 
