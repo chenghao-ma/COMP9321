@@ -20,6 +20,13 @@ import matplotlib.pyplot as matplt
 import squarify
 
 
+def read_svg(path):
+    svg = None
+    with open(path, 'r') as f:
+        svg = f.read()
+    return svg
+
+
 def avgUserRating(csv_data):
     # just get column of ave rating
     aur = csv_data['Average User Rating'].value_counts().sort_index()
@@ -30,7 +37,9 @@ def avgUserRating(csv_data):
     p.vbar(x=list(map(str,aur.index.values)),top=aur.values,width=0.9)
     p.xgrid.grid_line_color = None
     p.y_range.start=0
-    show(p)
+    p.output_backend = 'svg'
+    export_svgs(p, filename = "avgUserRating.svg")
+    return read_svg("avgUserRating.svg")
 
 def dateVsAppSize(csv_data):
     # format data string
@@ -54,8 +63,9 @@ def dateVsAppSize(csv_data):
              title='Date vs App Size (Monthly)')
     p.line(y='size', x='Original Release Date', source=monthly_size, line_width=2, line_color='Green')
     p.output_backend = 'svg'
-    export_svgs(p, filename = "plot.svg")
-    show(p)
+    export_svgs(p, filename = "dataVsAppSize.svg")
+    return read_svg("dataVsAppSize.svg")
+#    show(p)
 
 
 def computeUniq(csv_data):
@@ -110,7 +120,9 @@ def categoryChart(csv_data):
     # p.axis.visible=False
     # p.grid.grid_line_color = None
 
-    show(p)
+    p.output_backend = 'svg'
+    export_svgs(p, filename = "categoryChart.svg")
+    return read_svg("categoryChart.svg")
     
     # print(genres)
 
@@ -165,7 +177,8 @@ def countGeners(csv_data):
 
     squarify.plot(sizes=cate_value, label=cate_list, alpha=.7, color=cate_color )
     matplt.axis('off')
-    matplt.savefig('test.svg')
+    matplt.savefig('countGeners.svg')
+    return read_svg("countGeners.svg")
     # matplt.show()
 
 def getTopTen(csv_data):
@@ -208,7 +221,7 @@ def getTopTen(csv_data):
            "App Size" : row["Size"],
            "Rating" : row["Average User Rating"]
         })
-    return jsonify({'tasks':tasks})
+    return json_file
 
 csv_data = pd.read_csv("appstore_games.csv")
 #avgUserRating(csv_data)

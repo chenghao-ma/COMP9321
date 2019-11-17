@@ -96,22 +96,6 @@ class changePassword(Resource):
 def avgUserRating():
     return
 
-@auth.route('/predict')
-class predict(Resource):
-
-    @auth.response(200, 'Success')
-    @auth.response(403, 'Error')
-    def post(self):
-        try:
-            price = request.args.get("price")
-            ageRating = request.args.get("ageRating")
-            size = request.args.get("size")
-            genres = request.args.get("genres")
-            # return callPredict(price,ageRating,size,genres)
-            return ml(price,ageRating,size,genres)
-        except Exception as e:
-            return e
-
 @auth.route('/getTop')
 class top(Resource):
 
@@ -129,8 +113,7 @@ class getMeans(Resource):
     @auth.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
-        # global csv_data
-        print(csv_data)
+        return "<div>%s</div>".format(avgUserRating(csv_data))
     
 @auth.route('/dataSize')
 class getImages(Resource):
@@ -140,7 +123,7 @@ class getImages(Resource):
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
-        print(csv_data)
+        return "<div>%s</div>".format(dateVsAppSize(csv_data))
 
 
 @auth.route('/category')
@@ -151,7 +134,7 @@ class getCategory(Resource):
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
-        print(csv_data)
+        return "<div>%s</div>".format(computeUniq(csv_data))
 
 @auth.route('/Genres')
 class getCount(Resource):
@@ -161,7 +144,17 @@ class getCount(Resource):
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
-        print(csv_data)
+        return "<div>%s</div>".format(categoryChart(csv_data))
+
+@auth.route('/GetTopTen')
+class getTopTen(Resource):
+
+    @auth.response(200, 'Success')
+    @auth.response(403, 'Error')
+    def get(self):
+        csv_data = pd.read_csv("appstore_games.csv")
+        # global csv_data
+        return jsonify({"result" :getTopTen(csv_data)})
 
     
 
