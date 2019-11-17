@@ -15,7 +15,7 @@ from bokeh.transform import cumsum
 
 from bokeh.models import ColumnDataSource
 from bokeh.models.widgets import DataTable, DateFormatter, TableColumn
-from bokeh.io import output_file, show
+from bokeh.io import output_file, show, export_svgs
 import matplotlib.pyplot as matplt
 import squarify
 
@@ -53,6 +53,8 @@ def dateVsAppSize(csv_data):
              plot_height=250, plot_width=750,
              title='Date vs App Size (Monthly)')
     p.line(y='size', x='Original Release Date', source=monthly_size, line_width=2, line_color='Green')
+    p.output_backend = 'svg'
+    export_svgs(p, filename = "plot.svg")
     show(p)
 
 
@@ -163,7 +165,8 @@ def countGeners(csv_data):
 
     squarify.plot(sizes=cate_value, label=cate_list, alpha=.7, color=cate_color )
     matplt.axis('off')
-    matplt.show()
+    matplt.savefig('test.svg')
+    # matplt.show()
 
 def getTopTen(csv_data):
 
@@ -195,11 +198,22 @@ def getTopTen(csv_data):
 
     show(data_table)
 
+    json_file = []
+    for row in final:
+        json_file.append({
+           "Icon URL" : row["Icon URL"],
+           "Name" : row["Name"],
+           "Genres" : row["Genres"],
+           "Price" : row["Price"],
+           "App Size" : row["Size"],
+           "Rating" : row["Average User Rating"]
+        })
+    return jsonify({'tasks':tasks})
 
 csv_data = pd.read_csv("appstore_games.csv")
 #avgUserRating(csv_data)
-#dateVsAppSize(csv_data)
+# dateVsAppSize(csv_data)
 #categoryChart(csv_data)
 countGeners(csv_data)
 #getTopTen(csv_data)
-print(csv_data)
+# print(csv_data)
