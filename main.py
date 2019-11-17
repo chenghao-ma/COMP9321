@@ -92,15 +92,15 @@ class changePassword(Resource):
 
 # @auth.route('/Dashboard')
 #class Display(Resource):
-
+show = api.namespace('show', description='dataset presentation')
 def avgUserRating():
     return
 
-@auth.route('/predict')
+@show.route('/predict')
 class predict(Resource):
 
-    @auth.response(200, 'Success')
-    @auth.response(403, 'Error')
+    @show.response(200, 'Success')
+    @show.response(403, 'Error')
     def post(self):
         try:
             price = request.args.get("price")
@@ -112,57 +112,57 @@ class predict(Resource):
         except Exception as e:
             return e
 
-@auth.route('/getTop')
+@show.route('/getTop')
 class top(Resource):
 
-    @auth.response(200, 'Success')
-    @auth.response(403, 'Error')
+    @show.response(200, 'Success')
+    @show.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
         print(csv_data)
     
-@auth.route('/averageUserrating')
+@show.route('/averageUserrating')
 class getMeans(Resource):
 
-    @auth.response(200, 'Success')
-    @auth.response(403, 'Error')
+    @show.response(200, 'Success')
+    @show.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
         print(csv_data)
     
-@auth.route('/dataSize')
+@show.route('/dataSize')
 class getImages(Resource):
 
-    @auth.response(200, 'Success')
-    @auth.response(403, 'Error')
+    @show.response(200, 'Success')
+    @show.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
         print(csv_data)
 
 
-@auth.route('/category')
+@show.route('/category')
 class getCategory(Resource):
 
-    @auth.response(200, 'Success')
-    @auth.response(403, 'Error')
+    @show.response(200, 'Success')
+    @show.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
         print(csv_data)
 
-@auth.route('/Genres')
+@show.route('/Genres')
 class getCount(Resource):
 
-    @auth.response(200, 'Success')
-    @auth.response(403, 'Error')
+    @show.response(200, 'Success')
+    @show.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
         print(csv_data)
-
+predict = api.namespace('predict', description='predict Section')
     
 
 
