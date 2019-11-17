@@ -3,6 +3,7 @@ from flask_restplus import Api, Resource, fields
 from flask import request
 import pymongo
 from bson.objectid import ObjectId
+from localTest import *
 import time
 import pandas as pd
 import preprossing
@@ -92,15 +93,13 @@ class changePassword(Resource):
 
 # @auth.route('/Dashboard')
 #class Display(Resource):
-show = api.namespace('show', description='dataset presentation')
-def avgUserRating():
-    return
 
-@show.route('/predict')
+predict = api.namespace('predict', description='predict Section')
+@predict.route('/predict')
 class predict(Resource):
 
-    @show.response(200, 'Success')
-    @show.response(403, 'Error')
+    @predict.response(200, 'Success')
+    @predict.response(403, 'Error')
     def post(self):
         try:
             price = request.args.get("price")
@@ -112,15 +111,9 @@ class predict(Resource):
         except Exception as e:
             return e
 
-@show.route('/getTop')
-class top(Resource):
-
-    @show.response(200, 'Success')
-    @show.response(403, 'Error')
-    def get(self):
-        csv_data = pd.read_csv("appstore_games.csv")
-        # global csv_data
-        print(csv_data)
+show = api.namespace('show', description='dataset presentation')
+def avgUserRating():
+    return
     
 @show.route('/averageUserrating')
 class getMeans(Resource):
@@ -130,7 +123,7 @@ class getMeans(Resource):
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
-        print(csv_data)
+        return "<div>%s</div>".format(avgUserRating(csv_data))
     
 @show.route('/dataSize')
 class getImages(Resource):
@@ -140,7 +133,7 @@ class getImages(Resource):
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
-        print(csv_data)
+        return "<div>%s</div>".format(dateVsAppSize(csv_data))
 
 
 @show.route('/category')
@@ -151,7 +144,7 @@ class getCategory(Resource):
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
-        print(csv_data)
+        return "<div>%s</div>".format(computeUniq(csv_data))
 
 @show.route('/Genres')
 class getCount(Resource):
@@ -161,9 +154,18 @@ class getCount(Resource):
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
-        print(csv_data)
-predict = api.namespace('predict', description='predict Section')
-    
+        return "<div>%s</div>".format(categoryChart(csv_data))
+
+
+@show.route('/GetTopTen')
+class getTopTen(Resource):
+
+    @show.response(200, 'Success')
+    @show.response(403, 'Error')
+    def get(self):
+        csv_data = pd.read_csv("appstore_games.csv")
+        # global csv_data
+        return jsonify({"result" :getTopTen(csv_data)})
 
 
 
