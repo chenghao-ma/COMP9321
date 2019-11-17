@@ -2,9 +2,13 @@ from flask import Flask, jsonify
 from flask_restplus import Api, Resource, fields
 from flask import request
 import pymongo
-from pymongo import MongoClient
 from bson.objectid import ObjectId
 import time
+
+myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+database = myclient["mydatabase"]
+profile_collection = database["user_profile"]
+
 
 app = Flask(__name__)
 api = Api(app, version='1.0', title='RoundTable API',
@@ -19,8 +23,6 @@ class Signup(Resource):
         'password': fields.String(required=True, example='123456'),
         'first_name': fields.String(required=True, example='Dahai'),
         'last_name': fields.String(required=True, example='Pang'),
-        'wish_list': fields.List(fields.String)
-
     })
     @auth.expect(signup_details)
     @auth.response(200, 'Success')
@@ -34,9 +36,8 @@ class Signup(Resource):
                       'password': readData['password'],
                       'first_name': readData['first_name'],
                       'last_name': readData['last_name'],
-                      'wish_list': []
                       }
-        db.user_records.insert_one(insertData)
+        database.profile_collection.insert_one(insertData)
         return {'result': readData}
 
 
