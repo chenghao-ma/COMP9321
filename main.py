@@ -5,6 +5,9 @@ import pymongo
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import time
+import pandas as pd
+import preprossing
+from preprossing import *
 
 app = Flask(__name__)
 api = Api(app, version='1.0', title='RoundTable API',
@@ -12,6 +15,9 @@ api = Api(app, version='1.0', title='RoundTable API',
           )
 
 auth = api.namespace('auth', description='Auth Section')
+
+# csv_data = pd.read_csv("appstore_games.csv")
+
 @auth.route('/signup')
 class Signup(Resource):
     signup_details = api.model('signup_details', {
@@ -82,6 +88,82 @@ class changePassword(Resource):
             return {'result': 'Success'}
         else:
             return {'result': 'No such user'}
+
+# @auth.route('/Dashboard')
+#class Display(Resource):
+
+def avgUserRating():
+    return
+
+@auth.route('/predict')
+class predict(Resource):
+
+    @auth.response(200, 'Success')
+    @auth.response(403, 'Error')
+    def post(self):
+        try:
+            price = request.args.get("price")
+            ageRating = request.args.get("ageRating")
+            size = request.args.get("size")
+            genres = request.args.get("genres")
+            # return callPredict(price,ageRating,size,genres)
+            return ml(price,ageRating,size,genres)
+        except Exception as e:
+            return e
+
+@auth.route('/getTop')
+class top(Resource):
+
+    @auth.response(200, 'Success')
+    @auth.response(403, 'Error')
+    def get(self):
+        csv_data = pd.read_csv("appstore_games.csv")
+        # global csv_data
+        print(csv_data)
+    
+@auth.route('/averageUserrating')
+class getMeans(Resource):
+
+    @auth.response(200, 'Success')
+    @auth.response(403, 'Error')
+    def get(self):
+        csv_data = pd.read_csv("appstore_games.csv")
+        # global csv_data
+        print(csv_data)
+    
+@auth.route('/dataSize')
+class getImages(Resource):
+
+    @auth.response(200, 'Success')
+    @auth.response(403, 'Error')
+    def get(self):
+        csv_data = pd.read_csv("appstore_games.csv")
+        # global csv_data
+        print(csv_data)
+
+
+@auth.route('/category')
+class getCategory(Resource):
+
+    @auth.response(200, 'Success')
+    @auth.response(403, 'Error')
+    def get(self):
+        csv_data = pd.read_csv("appstore_games.csv")
+        # global csv_data
+        print(csv_data)
+
+@auth.route('/Genres')
+class getCount(Resource):
+
+    @auth.response(200, 'Success')
+    @auth.response(403, 'Error')
+    def get(self):
+        csv_data = pd.read_csv("appstore_games.csv")
+        # global csv_data
+        print(csv_data)
+
+    
+
 
 
 if __name__ == '__main__':
