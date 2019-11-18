@@ -8,17 +8,18 @@ import time
 import pandas as pd
 import preprossing
 from preprossing import *
+from flask_cors import CORS
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-database = myclient["mydatabase"]
-profile_collection = database["user_profile"]
+db = myclient["mydatabase"]
+profile_collection = db["user_profile"]
 
 
 app = Flask(__name__)
 api = Api(app, version='1.0', title='RoundTable API',
           description='A simple API for COMP9321',
           )
-
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}}) #sovle cors issue
 auth = api.namespace('auth', description='Auth Section')
 
 # csv_data = pd.read_csv("appstore_games.csv")
@@ -59,7 +60,7 @@ class Login(Resource):
     @auth.response(403, 'Invalid username or password')
     def post(self):
         readData = request.json
-        getData = db.user_records.find_one({'email': readData['email']})
+        getData = db.profile_collection.find_one({'email': readData['email']})
         if getData:
             if readData['password'] == getData['password']:
                 getData['_id'] = str(getData['_id'])
@@ -170,4 +171,5 @@ class getTopTen(Resource):
 
 
 if __name__ == '__main__':
+    CORS(app, supports_credentials=True)
     app.run(debug=True)

@@ -39,9 +39,8 @@ const useStyles = makeStyles(styles);
 export default function UserProfile() {
   const classes = useStyles();
   return (
-    <div>
       <GridContainer>
-        <GridItem xs={12} sm={12} md={8}>
+        <GridItem xs={12} sm={12} md={12}>
           <Card>
             <CardHeader color="primary">
               <h4 className={classes.cardTitleWhite}>Edit Profile</h4>
@@ -107,10 +106,10 @@ export default function UserProfile() {
             </CardBody>
             <CardFooter>
               <Button color="primary">Update Profile</Button>
+              <Button color="danger" onClick=()>Logout</Button>
             </CardFooter>
           </Card>
         </GridItem>
       </GridContainer>
-    </div>
   );
 }
