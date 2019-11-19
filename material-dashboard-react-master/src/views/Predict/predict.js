@@ -2,7 +2,7 @@
 import React,{Component} from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
+
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -18,23 +18,13 @@ import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardFooter from "components/Card/CardFooter.js";
-// import {Button, Card, CardBody, CardHeader, Col, CustomInput, Form, FormGroup, Input, Label, Row} from 'reactstrap';
+
 import { Col,  Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import axios from 'axios';
 import Typography from '@material-ui/core/Typography';
 
 import avatar from "assets/img/faces/marc.jpg";
 
-// import {
-//     Col,
-//     Form,
-//     FormGroup,
-//     Input,
-//     Label,
-//     Row,
-//     Button,
-//     FormText
-//   } from 'reactstrap';
 const styles = {
     cardCategoryWhite: {
       color: "rgba(255,255,255,.62)",

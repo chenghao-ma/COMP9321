@@ -5,13 +5,7 @@ import Person from "@material-ui/icons/Person";
 import DashboardPage from "views/Dashboard/Dashboard.js";
 import UserProfile from "views/UserProfile/UserProfile.js";
 import Predict from "views/Predict/predict.js";
-import TableList from "views/TableList/TableList.js";
-import Typography from "views/Typography/Typography.js";
-import Icons from "views/Icons/Icons.js";
-import Maps from "views/Maps/Maps.js";
-import NotificationsPage from "views/Notifications/Notifications.js";
-// core components/views for RTL layout
-import RTLPage from "views/RTLPage/RTLPage.js";
+
 import SignupPage from "views/Signup/SignupPage.js";
 import Fingerprint from "@material-ui/icons/Fingerprint";
 import LibraryBooks from "@material-ui/icons/LibraryBooks";
