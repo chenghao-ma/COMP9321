@@ -18,7 +18,7 @@ def pre():
 	df = pd.read_csv('appstore_games.csv',thousands = ',')
 	df.drop(['URL','User Rating Count','Name','In-app Purchases',\
 		'Description','Subtitle','Icon URL','Original Release Date',\
-		'Current Version Release Date','Languages','Primary Genre'], axis=1, inplace=True)
+		'Current Version Release Date','Primary Genre'], axis=1, inplace=True)
 
 	#delete NULL rating
 	a=[]
