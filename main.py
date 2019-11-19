@@ -45,7 +45,7 @@ class Signup(Resource):
                       'first_name': readData['first_name'],
                       'last_name': readData['last_name'],
                       }
-        database.profile_collection.insert_one(insertData)
+        db.profile_collection.insert_one(insertData)
         return {'result': readData}
 
 
@@ -81,10 +81,10 @@ class changePassword(Resource):
     @auth.response(403, 'Error')
     def put(self, user_id):
         readData = request.json
-        getData = db.user_records.find_one({'_id': ObjectId(user_id)})
+        getData = db.profile_collection.find_one({'_id': ObjectId(user_id)})
         if getData:
             updateData = {'password': readData['password']}
-            db.user_records.update_one(
+            db.profile_collection.update_one(
                 {'_id': ObjectId(user_id)},
                 {'$set': updateData}
             )
@@ -166,7 +166,7 @@ class getTopTen(Resource):
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
-        return jsonify({"result" :getTopTen(csv_data)})
+        return {"result" :getTopTen(csv_data)}
 
 
 

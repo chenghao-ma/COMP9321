@@ -1,7 +1,6 @@
 import React from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -9,11 +8,16 @@ import CustomInput from "components/CustomInput/CustomInput.js";
 import Button from "components/CustomButtons/Button.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
-import CardAvatar from "components/Card/CardAvatar.js";
 import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
-
-import avatar from "assets/img/faces/marc.jpg";
+// import all component js files needed
+// @material-ui/core components
+// antd design components
+import {
+  message
+} from "antd";
+import API from "../api.js";
+const api = new API();
 
 const styles = {
   cardCategoryWhite: {
@@ -33,6 +37,48 @@ const styles = {
     textDecoration: "none"
   }
 };
+const userInfo = JSON.parse(localStorage.getItem('userName'));
+function changePro_submit() {
+  // Defining const with input
+  const Orignial_password_value = document.getElementById('Orignial_password').value;
+  const password_value = document.getElementById('password').value;
+  const password_confirm_value = document.getElementById('password_confirm').value;
+  
+  // if no input,raise error
+  if (Orignial_password_value == '') {
+    alert('Please enter the original password.')
+    return
+  }
+  if (Orignial_password_value != userInfo.password) {
+    alert('Wrong original password.')
+    return
+  }
+  if (password_value != password_confirm_value) {
+    alert('Different confirm password.')
+    return
+  }
+  // got password value and update it in database
+  const path = 'auth/login/changePassword/' + userInfo._id;
+  console.log(path)
+  const headers = {
+    Accept: "application/json",
+    "Content-Type": "application/json"
+  }
+  const method = "PUT";
+  const body = {
+    "password": password_value
+  }
+  api.apiRequest(path, {
+    headers,
+    method,
+    body: JSON.stringify(body)
+  }).then(function (res) {
+    console.log(res)
+  });
+  alert('Successfully change password.');
+  localStorage.clear()
+  setTimeout("window.location.href='/admin/login'", 1000)
+}
 
 const useStyles = makeStyles(styles);
 
@@ -51,7 +97,7 @@ export default function UserProfile() {
                 
                 <GridItem xs={12} sm={12} md={3}>
                   <CustomInput
-                    labelText="Username"
+                    labelText={userInfo["first_name"]+' '+userInfo["last_name"]}
                     id="username"
                     formControlProps={{
                       fullWidth: true
@@ -63,7 +109,7 @@ export default function UserProfile() {
                 </GridItem>
                 <GridItem xs={12} sm={12} md={4}>
                   <CustomInput
-                    labelText="Email address"
+                    labelText={userInfo["email"]}
                     id="email-address"
                     formControlProps={{
                       fullWidth: true
@@ -75,8 +121,8 @@ export default function UserProfile() {
                 </GridItem>
                 <GridItem xs={12} sm={12} md={5}>
                   <CustomInput
-                    labelText="update password"
-                    id="password"
+                    labelText="orignial password"
+                    id = "Orignial_password"
                     formControlProps={{
                       fullWidth: true
                     }}
@@ -84,29 +130,27 @@ export default function UserProfile() {
                 </GridItem>
               </GridContainer>
               <GridContainer>
-                <GridItem xs={12} sm={12} md={6}>
+                <GridItem md={4}>
                   <CustomInput
-                    labelText="First Name"
-                    id="first-name"
+                    id="password"
+                    labelText="new password"
                     formControlProps={{
                       fullWidth: true
                     }}
                   />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={6}>
                   <CustomInput
-                    labelText="Last Name"
-                    id="last-name"
-                    formControlProps={{
+                   id = "password_confirm"
+                   labelText = "confirm your new password"
+                   formControlProps={{
                       fullWidth: true
                     }}
-                  />
+                   />
                 </GridItem>
               </GridContainer>
             </CardBody>
             <CardFooter>
-              <Button color="primary">Update Profile</Button>
-              <Button color="danger" onClick=()>Logout</Button>
+              <Button color="primary" onClick={() => changePro_submit()}>Update Profile</Button>
+              <Button color="danger" onClick={()=>{localStorage.clear();window.location.href='/admin/dashboard'}}  >Logout</Button>
             </CardFooter>
           </Card>
         </GridItem>

@@ -14,8 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 // import 'antd/dist/antd.css';
 import './login.css';
-import API from "./api";
-import {message} from 'antd';
+import API from "../api";
 const api = new API();
 
 function sleep() {
@@ -41,14 +40,14 @@ function login_submit(){
     }).then(function (res) {
         // console.log(res.result)
         if (res.result == 'Invalid email or password'){
-                message.error('Wrong Password');
+                alert('Wrong Password');
         }
         else{
             localStorage.clear()
             localStorage.setItem('isLogin','1')
             localStorage.setItem('userName', JSON.stringify(res.result));
-            message.success('Successfully Login')
-            setTimeout("window.location.href='/'", 1000)
+            alert('Successfully Login')
+            setTimeout("window.location.href='/admin/dashboard'", 1000)
         }
     })
 }
