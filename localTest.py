@@ -65,7 +65,7 @@ def dateVsAppSize(csv_data):
     p.output_backend = 'svg'
     export_svgs(p, filename = "dataVsAppSize.svg")
     return 'success'
-#    show(p)
+    # show(p)
 
 
 def computeUniq(csv_data):

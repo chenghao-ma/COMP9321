@@ -36,7 +36,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import tesdImage from "assets/img/cover.jpeg";
-
+import ReactSVG from 'react-svg'
+import svgLogo from "./dataVsAppSize.svg";
 import { Avatar } from '@material-ui/core';
 import ImageIcon from '@material-ui/icons/Image';
 import { bugs, website, server } from "variables/general.js";
@@ -48,7 +49,7 @@ import {
 } from "variables/charts.js";
 
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
-import API from "../api.js";
+import API from "../api.js.js";
 const api = new API();
 const useStyles = makeStyles(styles);
 
@@ -59,15 +60,16 @@ export default class Dashboard extends Component{
     this.state = {
       isLoading:true,
       topTen:[],
+      genresPath:null,
     };
 
     
   }
 
   async componentWillMount() {
-    const path = 'show/getTopTen';
-    console.log(path)
-    const headers = {
+    var path = 'show/getTopTen';
+    // console.log(path)
+    var headers = {
       Accept: "application/json",
       "Content-Type": "application/json"
     }
@@ -88,14 +90,36 @@ export default class Dashboard extends Component{
         let rating = element["Rating"];
         let genres = element["Genres"];
         let size = element["App Size"];
-        resultObj = [icon,name,rating,genres,size]
+        let price = element["Price"];
+        resultObj = [icon,name,rating,genres,size,price]
         result.push(resultObj);
-      });
-      // console.log(result)
-      this.setState({topTen:result,isLoading:false})
-      // console.log(this.state.topTen[0][0])
+      })
+      this.setState({topTen:result})
     });
-  }
+      
+    path = 'show/getGenre';
+    await api.apiRequest(path, {
+        headers,
+        method,
+      }).then((res) => {
+        console.log(res.result)
+        this.setState({genresPath: res.result})
+      });
+    path = 'show/avgUserRating';
+    await api.apiRequest(path, {
+      headers,
+      method,
+    }).then((res) => {
+      console.log(res.result)
+      this.setState({
+        genresPath: res.result
+      })
+    });
+    // console.log(result)
+      this.setState({isLoading:false})
+      // console.log(this.state.topTen[0][0])
+    
+    };
 
   render(){
     const { isLoading, ...res} = this.state;
@@ -121,7 +145,7 @@ export default class Dashboard extends Component{
               <CardBody>
                 <Table
                   tableHeaderColor="warning"
-                  tableHead={["Logo", "Name","Average User Rating", "Price", "Size"]}
+                  tableHead={["Logo", "Name","Average User Rating", "Genres", "Size","Price"]}
                   tableData={this.state.topTen}
                 />
               </CardBody>
@@ -165,24 +189,19 @@ export default class Dashboard extends Component{
             </Card>
           </GridItem>
         </GridContainer> */}
-        <GridContainer>
-          <GridItem xs={12} sm={12} md={6}>
+        < GridContainer direction = "column"
+        alignItems = "center"
+        justify = "center" >
+          <GridItem xs={12} sm={12} md={7}>
           <Card>
         <CardActionArea>
-          <CardMedia
-            component="img"
-            alt="Contemplative Reptile"
-            height='100%'
-            src={tesdImage }
-            title="Contemplative Reptile"
-          />
+          <ReactSVG src = {svgLogo} />
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
-              Lizard
+              Date & APP Size
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
-              Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-              across all continents except Antarctica
+              With the development of technology, the size of game app is becoming larger and larger.
             </Typography>
           </CardContent>
         </CardActionArea>
@@ -219,13 +238,13 @@ export default class Dashboard extends Component{
         <GridItem xs={12} sm={12} md={12}>
           <Card>
         <CardActionArea>
-          <CardMedia
+          {/* <CardMedia
             component="img"
             alt="Contemplative Reptile"
             height='50%'
             src={tesdImage }
             title="Contemplative Reptile"
-          />
+          /> */}
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
               Lizard

@@ -8,7 +8,7 @@ import time
 import pandas as pd
 import preprossing
 from preprossing import *
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 db = myclient["mydatabase"]
@@ -21,7 +21,7 @@ api = Api(app, version='1.0', title='RoundTable API',
           )
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}}) #sovle cors issue
 auth = api.namespace('auth', description='Auth Section')
-
+app.config['CORS_HEADERS'] = 'Content-Type'
 # csv_data = pd.read_csv("appstore_games.csv")
 
 @auth.route('/signup')
@@ -113,18 +113,33 @@ class predict(Resource):
             return e
 
 show = api.namespace('show', description='dataset presentation')
-def avgUserRating():
-    return
-    
-@show.route('/averageUserrating')
-class getMeans(Resource):
-
+@show.route('/avgUserRating')
+class avgUserRating(Resource):
     @show.response(200, 'Success')
     @show.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
-        # global csv_data
-        return "<div>%s</div>".format(avgUserRating(csv_data))
+        aur = csv_data['Average User Rating'].value_counts().sort_index()
+        # create bokeh figure for containing bar chart
+        p = figure(x_range=list(map(str,aur.index.values)), plot_height=250, title="Average User Rating", toolbar_location=None, tools = "")
+        
+        # create bar chart with x (rating 4.0 4.5...) and y (numbers)
+        p.vbar(x=list(map(str,aur.index.values)),top=aur.values,width=0.9)
+        p.xgrid.grid_line_color = None
+        p.y_range.start=0
+        p.output_backend = 'svg'
+        export_svgs(p, filename = "avgUserRating.svg")
+        return {'result': 'success'}
+    
+# @show.route('/averageUserrating')
+# class getMeans(Resource):
+
+#     @show.response(200, 'Success')
+#     @show.response(403, 'Error')
+#     def get(self):
+#         csv_data = pd.read_csv("appstore_games.csv")
+#         # global csv_data
+#         return "<div>%s</div>".format(avgUserRating(csv_data))
     
 @show.route('/dataSize')
 class getImages(Resource):
@@ -147,19 +162,34 @@ class getCategory(Resource):
         # global csv_data
         return "<div>%s</div>".format(computeUniq(csv_data))
 
-@show.route('/genres')
+@show.route('/getGenre')
 class getCount(Resource):
 
     @show.response(200, 'Success')
     @show.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
-        statu = categoryChart(csv_data)
-        if statu == 'success':
-        # global csv_data
-            return {'result': './dataVsAppSize.svg'}
-        else:
-            return {'result':'404'}
+        csv_data['Original Release Date'] = pd.to_datetime(csv_data['Original Release Date'], format = '%d/%m/%Y')
+        # just get column of Original Release Date
+        date_size = pd.DataFrame({'size':csv_data['Size']})
+        date_size = date_size.set_index(csv_data['Original Release Date'])
+        date_size = date_size.sort_values(by=['Original Release Date'])
+        date_size.head()
+        
+        # compute monthly number for each app
+        monthly_size = date_size.resample('M').mean()
+        tmp = date_size.resample('M')
+        monthly_size['min'] = tmp.min()
+        monthly_size['max'] = tmp.max()
+        monthly_size.head()
+
+        p = figure(x_axis_type='datetime',           
+                plot_height=250, plot_width=750,
+                title='Date vs App Size (Monthly)')
+        p.line(y='size', x='Original Release Date', source=monthly_size, line_width=2, line_color='Green')
+        p.output_backend = 'svg'
+        export_svgs(p, filename = "dataVsAppSize.svg")
+        return {'result': 'success'}
 
 
 @show.route('/getTopTen')
