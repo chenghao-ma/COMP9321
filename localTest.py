@@ -221,6 +221,7 @@ def getTopTen(csv_data):
            "App Size" : row["Size"],
            "Rating" : row["Average User Rating"]
         })
+    print(json_file)
     return json_file
 
 csv_data = pd.read_csv("appstore_games.csv")

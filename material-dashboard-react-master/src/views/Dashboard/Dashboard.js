@@ -48,247 +48,254 @@ import {
 } from "variables/charts.js";
 
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
-
+import API from "../api.js";
+const api = new API();
 const useStyles = makeStyles(styles);
 
 export default class Dashboard extends Component{
-// const useStyles = useStyles();
 
-constructor(props) {
-  super(props);
-  this.state = {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoading:true
+    };
+
     
-  };
+  }
 
-  
-}
-// componentDidMount(){
-//         axios.get("")
-//         .then(response => {
-//           return response.data;
-//         })
-//         .catch(error => {
-//           return error;
-//         });
+  componentWillMount() {
+    const path = 'show/GetTopTen';
+    console.log(path)
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    }
+    const method = "GET";
+    api.apiRequest(path, {
+      headers,
+      method,
+    }).then(function (res) {
+      console.log(res)
+    });
+  }
 
-// }
-render(){
-  return (
-    <div>
-       <GridContainer>
-       
-        <GridItem xs={12} sm={12} md={15}>
-          <Card>
-            <CardHeader color="warning">
-              <h4 className={useStyles.cardTitleWhite}>Top Rating APPS</h4>
-              <p className={useStyles.cardCategoryWhite}>
-                 {/* 1th September, 2016 */}
-              </p>
-            </CardHeader>
-
-            <CardBody>
-              <Table
-                tableHeaderColor="warning"
-                tableHead={["Logo", "Name","Average User Rating", "Price","Developer","Age Rating", "Size"]}
-                tableData={[
-                  [ <CardMedia>
-        < Avatar src={tesdImage } alt="..." />
-        </CardMedia>, "Dakota Rice", "$36,738", "Niger"],
-                  [ <CardMedia>
-                    < Avatar src={tesdImage } alt="..." />
-                    </CardMedia>, "Minerva Hooper", "$23,789", "Curaçao"],
-                  [ <CardMedia>
-                    < Avatar src={tesdImage } alt="..." />
-                    </CardMedia>, "Sage Rodriguez", "$56,142", "Netherlands"],
-                  [<CardMedia>
-                    < Avatar src={tesdImage } alt="..." />
-                    </CardMedia>, "Philip Chaney", "$38,735", "Korea, South"]
-                ]
-              }
-              />
-            </CardBody>
-          </Card>
-        </GridItem>
-      </GridContainer>
-      {/* <GridContainer>
-       
-        <GridItem xs={12} sm={6} md={3}>
-          <Card>
-            <CardHeader color="danger" stats icon>
-              <CardIcon color="danger">
-                <Icon>info_outline</Icon>
-              </CardIcon>
-              <p className={useStyles.cardCategory}>Fixed Issues</p>
-              <h3 className={useStyles.cardTitle}>75</h3>
-            </CardHeader>
-            <CardFooter stats>
-              <div className={useStyles.stats}>
-                <LocalOffer />
-                Tracked from Github
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={6} md={3}>
-          <Card>
-            <CardHeader color="info" stats icon>
-              <CardIcon color="info">
-                <Accessibility />
-              </CardIcon>
-              <p className={useStyles.cardCategory}>Followers</p>
-              <h3 className={useStyles.cardTitle}>+245</h3>
-            </CardHeader>
-            <CardFooter stats>
-              <div className={useStyles.stats}>
-                <Update />
-                Just Updated
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-      </GridContainer> */}
-      <GridContainer>
-        <GridItem xs={12} sm={12} md={6}>
-        <Card>
-      <CardActionArea>
-        <CardMedia
-          component="img"
-          alt="Contemplative Reptile"
-          height='100%'
-          src={tesdImage }
-          title="Contemplative Reptile"
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            Lizard
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-            across all continents except Antarctica
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-    
-    </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={6}>
-        <Card>
-      <CardActionArea>
-        <CardMedia
-          component="img"
-          alt="Contemplative Reptile"
-          height='100%'
-          src={tesdImage }
-          title="Contemplative Reptile"
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            Lizard
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-            across all continents except Antarctica
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-    
-    </Card>
-        </GridItem>
-  
-      </GridContainer>
-      <GridContainer>
+  render(){
+    return (
+      <div>
+        <GridContainer>
         
-      <GridItem xs={12} sm={12} md={12}>
-        <Card>
-      <CardActionArea>
-        <CardMedia
-          component="img"
-          alt="Contemplative Reptile"
-          height='50%'
-          src={tesdImage }
-          title="Contemplative Reptile"
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="h2">
-            Lizard
-          </Typography>
-          <Typography variant="body2" color="textSecondary" component="p">
-            Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-            across all continents except Antarctica
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-    
-    </Card>
-        </GridItem>
-      </GridContainer>
-      <GridContainer>
-        {/* <GridItem xs={12} sm={12} md={6}>
-          <CustomTabs
-            title="Tasks:"
-            headerColor="primary"
-            tabs={[
-              {
-                tabName: "Bugs",
-                tabIcon: BugReport,
-                tabContent: (
-                  <Tasks
-                    checkedIndexes={[0, 3]}
-                    tasksIndexes={[0, 1, 2, 3]}
-                    tasks={bugs}
-                  />
-                )
-              },
-              {
-                tabName: "Website",
-                tabIcon: Code,
-                tabContent: (
-                  <Tasks
-                    checkedIndexes={[0]}
-                    tasksIndexes={[0, 1]}
-                    tasks={website}
-                  />
-                )
-              },
-              {
-                tabName: "Server",
-                tabIcon: Cloud,
-                tabContent: (
-                  <Tasks
-                    checkedIndexes={[1]}
-                    tasksIndexes={[0, 1, 2]}
-                    tasks={server}
-                  />
-                )
-              }
-            ]}
-          />
-        </GridItem> */}
-        {/* <GridItem xs={12} sm={12} md={6}>
-          <Card>
-            <CardHeader color="warning">
-              <h4 className={useStyles.cardTitleWhite}>Employees Stats</h4>
-              <p className={useStyles.cardCategoryWhite}>
-                New employees on 15th September, 2016
-              </p>
-            </CardHeader>
-            <CardBody>
-              <Table
-                tableHeaderColor="warning"
-                tableHead={["ID", "Name", "Salary", "Country"]}
-                tableData={[
-                  ["1", "Dakota Rice", "$36,738", "Niger"],
-                  ["2", "Minerva Hooper", "$23,789", "Curaçao"],
-                  ["3", "Sage Rodriguez", "$56,142", "Netherlands"],
-                  ["4", "Philip Chaney", "$38,735", "Korea, South"]
-                ]}
-              />
-            </CardBody>
-          </Card>
-        </GridItem> */}
-      </GridContainer>
-    </div>
-  );
-}
+          <GridItem xs={12} sm={12} md={15}>
+            <Card>
+              <CardHeader color="warning">
+                <h4 className={useStyles.cardTitleWhite}>Top Rating APPS</h4>
+                <p className={useStyles.cardCategoryWhite}>
+                  {/* 1th September, 2016 */}
+                </p>
+              </CardHeader>
 
-}
+              <CardBody>
+                <Table
+                  tableHeaderColor="warning"
+                  tableHead={["Logo", "Name","Average User Rating", "Price","Developer","Age Rating", "Size"]}
+                  tableData={[
+                    [ <CardMedia>
+          < Avatar src={tesdImage } alt="..." />
+          </CardMedia>, "Dakota Rice", "$36,738", "Niger"],
+                    [ <CardMedia>
+                      < Avatar src={tesdImage } alt="..." />
+                      </CardMedia>, "Minerva Hooper", "$23,789", "Curaçao"],
+                    [ <CardMedia>
+                      < Avatar src={tesdImage } alt="..." />
+                      </CardMedia>, "Sage Rodriguez", "$56,142", "Netherlands"],
+                    [<CardMedia>
+                      < Avatar src={tesdImage } alt="..." />
+                      </CardMedia>, "Philip Chaney", "$38,735", "Korea, South"]
+                  ]
+                }
+                />
+              </CardBody>
+            </Card>
+          </GridItem>
+        </GridContainer>
+        {/* <GridContainer>
+        
+          <GridItem xs={12} sm={6} md={3}>
+            <Card>
+              <CardHeader color="danger" stats icon>
+                <CardIcon color="danger">
+                  <Icon>info_outline</Icon>
+                </CardIcon>
+                <p className={useStyles.cardCategory}>Fixed Issues</p>
+                <h3 className={useStyles.cardTitle}>75</h3>
+              </CardHeader>
+              <CardFooter stats>
+                <div className={useStyles.stats}>
+                  <LocalOffer />
+                  Tracked from Github
+                </div>
+              </CardFooter>
+            </Card>
+          </GridItem>
+          <GridItem xs={12} sm={6} md={3}>
+            <Card>
+              <CardHeader color="info" stats icon>
+                <CardIcon color="info">
+                  <Accessibility />
+                </CardIcon>
+                <p className={useStyles.cardCategory}>Followers</p>
+                <h3 className={useStyles.cardTitle}>+245</h3>
+              </CardHeader>
+              <CardFooter stats>
+                <div className={useStyles.stats}>
+                  <Update />
+                  Just Updated
+                </div>
+              </CardFooter>
+            </Card>
+          </GridItem>
+        </GridContainer> */}
+        <GridContainer>
+          <GridItem xs={12} sm={12} md={6}>
+          <Card>
+        <CardActionArea>
+          <CardMedia
+            component="img"
+            alt="Contemplative Reptile"
+            height='100%'
+            src={tesdImage }
+            title="Contemplative Reptile"
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              Lizard
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
+              across all continents except Antarctica
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      
+      </Card>
+          </GridItem>
+          <GridItem xs={12} sm={12} md={6}>
+          <Card>
+        <CardActionArea>
+          <CardMedia
+            component="img"
+            alt="Contemplative Reptile"
+            height='100%'
+            src={tesdImage }
+            title="Contemplative Reptile"
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              Lizard
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
+              across all continents except Antarctica
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      
+      </Card>
+          </GridItem>
+    
+        </GridContainer>
+        <GridContainer>
+          
+        <GridItem xs={12} sm={12} md={12}>
+          <Card>
+        <CardActionArea>
+          <CardMedia
+            component="img"
+            alt="Contemplative Reptile"
+            height='50%'
+            src={tesdImage }
+            title="Contemplative Reptile"
+          />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              Lizard
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
+              across all continents except Antarctica
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      
+      </Card>
+          </GridItem>
+        </GridContainer>
+        <GridContainer>
+          {/* <GridItem xs={12} sm={12} md={6}>
+            <CustomTabs
+              title="Tasks:"
+              headerColor="primary"
+              tabs={[
+                {
+                  tabName: "Bugs",
+                  tabIcon: BugReport,
+                  tabContent: (
+                    <Tasks
+                      checkedIndexes={[0, 3]}
+                      tasksIndexes={[0, 1, 2, 3]}
+                      tasks={bugs}
+                    />
+                  )
+                },
+                {
+                  tabName: "Website",
+                  tabIcon: Code,
+                  tabContent: (
+                    <Tasks
+                      checkedIndexes={[0]}
+                      tasksIndexes={[0, 1]}
+                      tasks={website}
+                    />
+                  )
+                },
+                {
+                  tabName: "Server",
+                  tabIcon: Cloud,
+                  tabContent: (
+                    <Tasks
+                      checkedIndexes={[1]}
+                      tasksIndexes={[0, 1, 2]}
+                      tasks={server}
+                    />
+                  )
+                }
+              ]}
+            />
+          </GridItem> */}
+          {/* <GridItem xs={12} sm={12} md={6}>
+            <Card>
+              <CardHeader color="warning">
+                <h4 className={useStyles.cardTitleWhite}>Employees Stats</h4>
+                <p className={useStyles.cardCategoryWhite}>
+                  New employees on 15th September, 2016
+                </p>
+              </CardHeader>
+              <CardBody>
+                <Table
+                  tableHeaderColor="warning"
+                  tableHead={["ID", "Name", "Salary", "Country"]}
+                  tableData={[
+                    ["1", "Dakota Rice", "$36,738", "Niger"],
+                    ["2", "Minerva Hooper", "$23,789", "Curaçao"],
+                    ["3", "Sage Rodriguez", "$56,142", "Netherlands"],
+                    ["4", "Philip Chaney", "$38,735", "Korea, South"]
+                  ]}
+                />
+              </CardBody>
+            </Card>
+          </GridItem> */}
+        </GridContainer>
+      </div>
+    );
+  }
+
+  }

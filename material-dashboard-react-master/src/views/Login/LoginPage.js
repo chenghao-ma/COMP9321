@@ -14,8 +14,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 // import 'antd/dist/antd.css';
 import './login.css';
-import API from "./api";
-import {message} from 'antd';
+import API from "../api";
 const api = new API();
 
 function sleep() {
@@ -41,14 +40,14 @@ function login_submit(){
     }).then(function (res) {
         // console.log(res.result)
         if (res.result == 'Invalid email or password'){
-                message.error('Wrong Password');
+                alert('Wrong Password');
         }
         else{
             localStorage.clear()
             localStorage.setItem('isLogin','1')
-            localStorage.setItem('userInfo', JSON.stringify(res.result));
-            message.success('Successfully Login')
-            setTimeout("window.location.href='/'", 1000)
+            localStorage.setItem('userName', JSON.stringify(res.result));
+            alert('Successfully Login')
+            setTimeout("window.location.href='/admin/dashboard'", 1000)
         }
     })
 }
@@ -58,7 +57,7 @@ function Copyright() {
         <Typography variant="body2" color="textSecondary" align="center">
             {'Copyright © '}
             <Link color="inherit" href="./">
-                ROUND TABLE 9900
+                ROUND TABLE 9321
             </Link>{' '}
             {new Date().getFullYear()}
             {'.'}
@@ -77,7 +76,7 @@ const useStyles = makeStyles(theme => ({
         backgroundPosition: 'center',
     },
     paper: {
-        margin: theme.spacing(8, 4),
+        margin: theme.spacing(8),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -99,16 +98,13 @@ export default function LoginPage() {
     const classes = useStyles();
 
     return (
-        <Grid container component="main" className={classes.root}>
-            <CssBaseline />
-            <Grid item xs={false} sm={4} md={7} className={classes.image} />
-            <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+            <Grid item xs={12} sm={8} md={12} component={Paper} elevation={6} square >
                 <div className={classes.paper} >
                     <Avatar className={classes.avatar}>
                         <LockOutlinedIcon />
                     </Avatar>
                     <Typography component="h1" variant="h5">
-                        Sign in
+                        Log in
                     </Typography>
                     <form className={classes.form} noValidate>
                         <TextField
@@ -156,9 +152,6 @@ export default function LoginPage() {
                                 {/*</Link>*/}
                             </Grid>
                             <Grid item  style={{marginTop:"15px"}}>
-                                <Link href="/signup" variant="body2">
-                                    {"Don't have an account? Sign Up"}
-                                </Link>
                             </Grid>
                         </Grid>
                         <Box mt={5}>
@@ -167,6 +160,5 @@ export default function LoginPage() {
                     </form>
                 </div>
             </Grid>
-        </Grid>
     );
 }
