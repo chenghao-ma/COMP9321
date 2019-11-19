@@ -147,26 +147,53 @@ class getCategory(Resource):
         # global csv_data
         return "<div>%s</div>".format(computeUniq(csv_data))
 
-@show.route('/Genres')
+@show.route('/genres')
 class getCount(Resource):
 
     @show.response(200, 'Success')
     @show.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
+        statu = categoryChart(csv_data)
+        if statu == 'success':
         # global csv_data
-        return "<div>%s</div>".format(categoryChart(csv_data))
+            return {'result': './dataVsAppSize.svg'}
+        else:
+            return {'result':'404'}
 
 
-@show.route('/GetTopTen')
+@show.route('/getTopTen')
 class getTopTen(Resource):
 
     @show.response(200, 'Success')
     @show.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
+        csv_data['User Rating Count'] = csv_data['User Rating Count'].fillna(0)
+        csv_data['User Rating Count'] = csv_data['User Rating Count'].astype('int64')
+        # sort by rating
+        temp = csv_data.sort_values(['User Rating Count'], ascending=False)
+        
+        # pick specific columns
+        final = temp.loc[:, ['Icon URL','Name', 'Genres', 'Price', 'Size', 'Average User Rating']]
+        
+        # pick top 10 rows
+        final = final[:5]
+        print(final)
+        json_file = []
+        for index,row in final.iterrows():
+            print(row[1])
+            json_file.append({
+            "Icon URL" : row[0],
+            "Name" : row[1],
+            "Genres" : row["Genres"],
+            "Price" : row["Price"],
+            "App Size" : row["Size"],
+            "Rating" : row["Average User Rating"]
+            })
+        print(json_file)
         # global csv_data
-        return {"result" :getTopTen(csv_data)}
+        return {"result" :json_file}
 
 
 

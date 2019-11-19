@@ -64,7 +64,7 @@ def dateVsAppSize(csv_data):
     p.line(y='size', x='Original Release Date', source=monthly_size, line_width=2, line_color='Green')
     p.output_backend = 'svg'
     export_svgs(p, filename = "dataVsAppSize.svg")
-    return read_svg("dataVsAppSize.svg")
+    return 'success'
 #    show(p)
 
 
@@ -195,21 +195,21 @@ def getTopTen(csv_data):
     # pick top 10 rows
     final = final[:5]
 
-    source = ColumnDataSource(final)
+    # source = ColumnDataSource(final)
 
-    columns = [
-            TableColumn(field="Icon URL", title="Icon"),
-            TableColumn(field="Name", title="Name"),
-            TableColumn(field="Genres", title="Genres"),
-            TableColumn(field="Price", title="Price"),
-            TableColumn(field="Size", title="App Size"),
-            TableColumn(field="Average User Rating", title="Rating"),
-        ]
+    # columns = [
+    #         TableColumn(field="Icon URL", title="Icon"),
+    #         TableColumn(field="Name", title="Name"),
+    #         TableColumn(field="Genres", title="Genres"),
+    #         TableColumn(field="Price", title="Price"),
+    #         TableColumn(field="Size", title="App Size"),
+    #         TableColumn(field="Average User Rating", title="Rating"),
+    #     ]
         
-    # create data table
-    data_table = DataTable(source=source, columns=columns, width=400, height=280)
+    # # create data table
+    # data_table = DataTable(source=source, columns=columns, width=400, height=280)
 
-    show(data_table)
+    # show(data_table)
 
     json_file = []
     for row in final:
@@ -224,10 +224,10 @@ def getTopTen(csv_data):
     print(json_file)
     return json_file
 
-csv_data = pd.read_csv("appstore_games.csv")
+# csv_data = pd.read_csv("appstore_games.csv")
 #avgUserRating(csv_data)
 # dateVsAppSize(csv_data)
 #categoryChart(csv_data)
-countGeners(csv_data)
+# countGeners(csv_data)
 #getTopTen(csv_data)
 # print(csv_data)

@@ -57,30 +57,55 @@ export default class Dashboard extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      isLoading:true
+      isLoading:true,
+      topTen:[],
     };
 
     
   }
 
-  componentWillMount() {
-    const path = 'show/GetTopTen';
+  async componentWillMount() {
+    const path = 'show/getTopTen';
     console.log(path)
     const headers = {
       Accept: "application/json",
       "Content-Type": "application/json"
     }
     const method = "GET";
-    api.apiRequest(path, {
+    await api.apiRequest(path, {
       headers,
       method,
-    }).then(function (res) {
-      console.log(res)
+    }).then((res) => {
+      console.log(res.result);
+      var result  = [];
+      res.result.forEach(element => {
+        let resultObj = [];
+        let icon = <CardMedia>
+          < Avatar src={element["Icon URL"]} alt="..." />
+          </CardMedia>
+        // console.log(element["Icon URL"]);
+        let name = element["Name"];
+        let rating = element["Rating"];
+        let genres = element["Genres"];
+        let size = element["App Size"];
+        resultObj = [icon,name,rating,genres,size]
+        result.push(resultObj);
+      });
+      // console.log(result)
+      this.setState({topTen:result,isLoading:false})
+      // console.log(this.state.topTen[0][0])
     });
   }
 
   render(){
+    const { isLoading, ...res} = this.state;
+        if (isLoading) {
+            return (<div> Loading
+            </div>
+            )
+        }
     return (
+
       <div>
         <GridContainer>
         
@@ -97,21 +122,7 @@ export default class Dashboard extends Component{
                 <Table
                   tableHeaderColor="warning"
                   tableHead={["Logo", "Name","Average User Rating", "Price","Developer","Age Rating", "Size"]}
-                  tableData={[
-                    [ <CardMedia>
-          < Avatar src={tesdImage } alt="..." />
-          </CardMedia>, "Dakota Rice", "$36,738", "Niger"],
-                    [ <CardMedia>
-                      < Avatar src={tesdImage } alt="..." />
-                      </CardMedia>, "Minerva Hooper", "$23,789", "Curaçao"],
-                    [ <CardMedia>
-                      < Avatar src={tesdImage } alt="..." />
-                      </CardMedia>, "Sage Rodriguez", "$56,142", "Netherlands"],
-                    [<CardMedia>
-                      < Avatar src={tesdImage } alt="..." />
-                      </CardMedia>, "Philip Chaney", "$38,735", "Korea, South"]
-                  ]
-                }
+                  tableData={this.state.topTen}
                 />
               </CardBody>
             </Card>
