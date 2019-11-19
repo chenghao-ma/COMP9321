@@ -109,7 +109,7 @@ export default class Dashboard extends Component{
       <div>
         <GridContainer>
         
-          <GridItem xs={12} sm={12} md={15}>
+          <GridItem xs={12} sm={12} md={12}>
             <Card>
               <CardHeader color="warning">
                 <h4 className={useStyles.cardTitleWhite}>Top Rating APPS</h4>
@@ -121,7 +121,7 @@ export default class Dashboard extends Component{
               <CardBody>
                 <Table
                   tableHeaderColor="warning"
-                  tableHead={["Logo", "Name","Average User Rating", "Price","Developer","Age Rating", "Size"]}
+                  tableHead={["Logo", "Name","Average User Rating", "Price", "Size"]}
                   tableData={this.state.topTen}
                 />
               </CardBody>
