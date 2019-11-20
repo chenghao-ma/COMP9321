@@ -16,7 +16,7 @@ import CardFooter from "components/Card/CardFooter.js";
 import {
   message
 } from "antd";
-import API from "../api.js.js";
+import API from "../api.js";
 const api = new API();
 
 const styles = {

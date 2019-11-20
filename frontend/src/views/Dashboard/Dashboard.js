@@ -49,7 +49,7 @@ import {
 } from "variables/charts.js";
 
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
-import API from "../api.js.js";
+import API from "../api.js";
 const api = new API();
 const useStyles = makeStyles(styles);
 
