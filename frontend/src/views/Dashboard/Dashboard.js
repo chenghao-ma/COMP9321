@@ -37,7 +37,6 @@ import Typography from '@material-ui/core/Typography';
 
 import tesdImage from "assets/img/cover.jpeg";
 import ReactSVG from 'react-svg'
-import svgLogo from "./dataVsAppSize.svg";
 import { Avatar } from '@material-ui/core';
 import ImageIcon from '@material-ui/icons/Image';
 import { bugs, website, server } from "variables/general.js";
@@ -60,7 +59,10 @@ export default class Dashboard extends Component{
     this.state = {
       isLoading:true,
       topTen:[],
-      genresPath:null,
+      avgUserRating:null,
+      dateVsAppSize:null,
+      category:null,
+      countGeners:null,
     };
 
     
@@ -97,13 +99,15 @@ export default class Dashboard extends Component{
       this.setState({topTen:result})
     });
       
-    path = 'show/getGenre';
+    path = 'show/dateVsAppSize';
     await api.apiRequest(path, {
         headers,
         method,
       }).then((res) => {
         console.log(res.result)
-        this.setState({genresPath: res.result})
+        this.setState({
+          dateVsAppSize: require('./dateVsAppSize.svg')
+        })
       });
     path = 'show/avgUserRating';
     await api.apiRequest(path, {
@@ -112,11 +116,31 @@ export default class Dashboard extends Component{
     }).then((res) => {
       console.log(res.result)
       this.setState({
-        genresPath: res.result
+        avgUserRating: require('./avgUserRating.svg')
+      })
+    });
+    path = 'show/category';
+    await api.apiRequest(path, {
+      headers,
+      method,
+    }).then((res) => {
+      console.log(res.result)
+      this.setState({
+        categoryChart: require('./categoryChart.svg')
+      })
+    });
+    path = 'show/countGeners';
+    await api.apiRequest(path, {
+      headers,
+      method,
+    }).then((res) => {
+      console.log(res.result)
+      this.setState({
+        countGeners: require('./countGeners.svg')
       })
     });
     // console.log(result)
-      this.setState({isLoading:false})
+    this.setState({isLoading:false})
       // console.log(this.state.topTen[0][0])
     
     };
@@ -152,50 +176,14 @@ export default class Dashboard extends Component{
             </Card>
           </GridItem>
         </GridContainer>
-        {/* <GridContainer>
-        
-          <GridItem xs={12} sm={6} md={3}>
-            <Card>
-              <CardHeader color="danger" stats icon>
-                <CardIcon color="danger">
-                  <Icon>info_outline</Icon>
-                </CardIcon>
-                <p className={useStyles.cardCategory}>Fixed Issues</p>
-                <h3 className={useStyles.cardTitle}>75</h3>
-              </CardHeader>
-              <CardFooter stats>
-                <div className={useStyles.stats}>
-                  <LocalOffer />
-                  Tracked from Github
-                </div>
-              </CardFooter>
-            </Card>
-          </GridItem>
-          <GridItem xs={12} sm={6} md={3}>
-            <Card>
-              <CardHeader color="info" stats icon>
-                <CardIcon color="info">
-                  <Accessibility />
-                </CardIcon>
-                <p className={useStyles.cardCategory}>Followers</p>
-                <h3 className={useStyles.cardTitle}>+245</h3>
-              </CardHeader>
-              <CardFooter stats>
-                <div className={useStyles.stats}>
-                  <Update />
-                  Just Updated
-                </div>
-              </CardFooter>
-            </Card>
-          </GridItem>
-        </GridContainer> */}
+
         < GridContainer direction = "column"
         alignItems = "center"
         justify = "center" >
           <GridItem xs={12} sm={12} md={7}>
           <Card>
         <CardActionArea>
-          <ReactSVG src = {svgLogo} />
+          <ReactSVG src = {this.state.dateVsAppSize} />
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
               Date & APP Size
@@ -208,19 +196,46 @@ export default class Dashboard extends Component{
       
       </Card>
           </GridItem>
+          <GridItem xs={12} sm={12} md={7}>
+          <Card>
+        <CardActionArea>
+          <ReactSVG src = {this.state.avgUserRating} />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              Average User Rating
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              This graph shows the count of different ratings. Most game apps are rated around 4.5
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      
+      </Card>
+          </GridItem>
+          
+        <GridItem xs={12} sm={12} md={8}>
+          <Card>
+        <CardActionArea>
+          <ReactSVG src = {this.state.categoryChart} />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              Category Pie Chart
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              This is a pie chart shows the category distribution in this dataset.
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      
+      </Card>
+          </GridItem>
           <GridItem xs={12} sm={12} md={6}>
           <Card>
         <CardActionArea>
-          <CardMedia
-            component="img"
-            alt="Contemplative Reptile"
-            height='100%'
-            src={tesdImage }
-            title="Contemplative Reptile"
-          />
+          <ReactSVG src = {this.state.countGeners} />
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
-              Lizard
+              Count how many geners in this dataset.
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
               Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
@@ -231,98 +246,6 @@ export default class Dashboard extends Component{
       
       </Card>
           </GridItem>
-    
-        </GridContainer>
-        <GridContainer>
-          
-        <GridItem xs={12} sm={12} md={12}>
-          <Card>
-        <CardActionArea>
-          {/* <CardMedia
-            component="img"
-            alt="Contemplative Reptile"
-            height='50%'
-            src={tesdImage }
-            title="Contemplative Reptile"
-          /> */}
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              Lizard
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-              across all continents except Antarctica
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-      
-      </Card>
-          </GridItem>
-        </GridContainer>
-        <GridContainer>
-          {/* <GridItem xs={12} sm={12} md={6}>
-            <CustomTabs
-              title="Tasks:"
-              headerColor="primary"
-              tabs={[
-                {
-                  tabName: "Bugs",
-                  tabIcon: BugReport,
-                  tabContent: (
-                    <Tasks
-                      checkedIndexes={[0, 3]}
-                      tasksIndexes={[0, 1, 2, 3]}
-                      tasks={bugs}
-                    />
-                  )
-                },
-                {
-                  tabName: "Website",
-                  tabIcon: Code,
-                  tabContent: (
-                    <Tasks
-                      checkedIndexes={[0]}
-                      tasksIndexes={[0, 1]}
-                      tasks={website}
-                    />
-                  )
-                },
-                {
-                  tabName: "Server",
-                  tabIcon: Cloud,
-                  tabContent: (
-                    <Tasks
-                      checkedIndexes={[1]}
-                      tasksIndexes={[0, 1, 2]}
-                      tasks={server}
-                    />
-                  )
-                }
-              ]}
-            />
-          </GridItem> */}
-          {/* <GridItem xs={12} sm={12} md={6}>
-            <Card>
-              <CardHeader color="warning">
-                <h4 className={useStyles.cardTitleWhite}>Employees Stats</h4>
-                <p className={useStyles.cardCategoryWhite}>
-                  New employees on 15th September, 2016
-                </p>
-              </CardHeader>
-              <CardBody>
-                <Table
-                  tableHeaderColor="warning"
-                  tableHead={["ID", "Name", "Salary", "Country"]}
-                  tableData={[
-                    ["1", "Dakota Rice", "$36,738", "Niger"],
-                    ["2", "Minerva Hooper", "$23,789", "Curaçao"],
-                    ["3", "Sage Rodriguez", "$56,142", "Netherlands"],
-                    ["4", "Philip Chaney", "$38,735", "Korea, South"]
-                  ]}
-                />
-              </CardBody>
-            </Card>
-          </GridItem> */}
         </GridContainer>
       </div>
     );

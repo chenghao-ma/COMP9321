@@ -9,6 +9,9 @@ import pandas as pd
 import preprossing
 from preprossing import *
 from flask_cors import CORS, cross_origin
+import os
+import matplotlib.pyplot as matplt
+
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 db = myclient["mydatabase"]
@@ -92,9 +95,6 @@ class changePassword(Resource):
         else:
             return {'result': 'No such user'}
 
-# @auth.route('/Dashboard')
-#class Display(Resource):
-
 predict = api.namespace('predict', description='predict Section')
 @predict.route('/predict')
 class predict(Resource):
@@ -128,29 +128,46 @@ class avgUserRating(Resource):
         p.xgrid.grid_line_color = None
         p.y_range.start=0
         p.output_backend = 'svg'
-        export_svgs(p, filename = "avgUserRating.svg")
-        return {'result': 'success'}
-    
-# @show.route('/averageUserrating')
-# class getMeans(Resource):
-
-#     @show.response(200, 'Success')
-#     @show.response(403, 'Error')
-#     def get(self):
-#         csv_data = pd.read_csv("appstore_games.csv")
-#         # global csv_data
-#         return "<div>%s</div>".format(avgUserRating(csv_data))
-    
-@show.route('/dataSize')
+        if os.path.exists('frontend/src/views/Dashboard/avgUserRating.svg'):
+            return {'result': 'avgUserRating has been exported'}
+        else:
+            export_svgs(p, filename = 'frontend/src/views/Dashboard/avgUserRating.svg')
+            return {'result': 'avgUserRating success'}
+@show.route('/countGeners')
 class getImages(Resource):
 
     @show.response(200, 'Success')
     @show.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
-        # global csv_data
-        return "<div>%s</div>".format(dateVsAppSize(csv_data))
+        genres = pd.DataFrame({ 'category' : csv_data["Genres"]})
+        category = {}
+        for row in csv_data["Genres"]:
+            cate_list = row.split(',')
+            for i in cate_list:
+                if i not in category:
+                    category[i] = 1
+                else:
+                    category[i] += 1
+        cleaned_category = {}
+        for key in category:
+            if category[key] > 500 :
+                cleaned_category[key] = category[key]
+        category = cleaned_category
+        cate_list = sorted(category, key=category.get, reverse=True)
+        cate_value = []
+        cate_color = ["maroon","navy","orange","blue", "grey","purple","yellow","pink","brown","olive","cyan","magenta","limegreen","gold","darkkhaki"]
 
+        for key in cate_list:
+            cate_value.append(category[key])
+
+        squarify.plot(sizes=cate_value, label=cate_list, alpha=.7, color=cate_color )
+        matplt.axis('off')
+        if os.path.exists('frontend/src/views/Dashboard/countGeners.svg'):
+            return {'result': 'countGeners has been exported'}
+        else:
+            matplt.savefig('frontend/src/views/Dashboard/countGeners.svg')
+            return {'result': 'countGeners success'}
 
 @show.route('/category')
 class getCategory(Resource):
@@ -160,9 +177,45 @@ class getCategory(Resource):
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
-        return "<div>%s</div>".format(computeUniq(csv_data))
+        genres = pd.DataFrame({ 'category' : csv_data["Genres"]})
+        category = {}
+        for row in csv_data["Genres"]:
+            cate_list = row.split(',')
+            for i in cate_list:
+                if i not in category:
+                    category[i] = 1
+                else:
+                    category[i] += 1
+        cleaned_category = {}
+        
+        # remains category which is larger than 100
+        for key in category:
+            if category[key] > 100 :
+                cleaned_category[key] = category[key]
+        category = cleaned_category
+        # create dataframe for category
+        data = pd.Series(category).reset_index(name='value').rename(columns={'index':'category'})
 
-@show.route('/getGenre')
+        data['angle'] = data['value']/data['value'].sum() * 2*pi
+        data['color'] = Category20c[20] + Category20c[3]
+    #    data["value"] = data['value']
+        
+        # create figure for containing pie chart
+        p = figure(plot_height=350, plot_width=750, title="Numbers of Different Genres", toolbar_location=None,
+            tools="hover", tooltips="@category: @value")
+            
+        # create pie chart auto compute angle for each category
+        p.wedge(x=0, y=1, radius=0.4,
+                start_angle=cumsum('angle', include_zero=True), end_angle=cumsum('angle'),
+                line_color="white", fill_color='color', legend='category', source=data)
+        p.output_backend = 'svg'
+        if os.path.exists('frontend/src/views/Dashboard/categoryChart.svg'):
+            return {'result': 'categoryChart has been exported'}
+        else:
+            export_svgs(p, filename = 'frontend/src/views/Dashboard/categoryChart.svg')
+            return {'result': 'categoryChart success'}
+
+@show.route('/dateVsAppSize')
 class getCount(Resource):
 
     @show.response(200, 'Success')
@@ -188,8 +241,12 @@ class getCount(Resource):
                 title='Date vs App Size (Monthly)')
         p.line(y='size', x='Original Release Date', source=monthly_size, line_width=2, line_color='Green')
         p.output_backend = 'svg'
-        export_svgs(p, filename = "dataVsAppSize.svg")
-        return {'result': 'success'}
+        if os.path.exists('frontend/src/views/Dashboard/dateVsAppSize.svg'):
+            return {'result': 'dateVsAppSize has been exported'}
+        else:
+            export_svgs(p, filename = 'frontend/src/views/Dashboard/dateVsAppSize.svg')
+            return {'result': 'dateVsAppSize success'}
+
 
 
 @show.route('/getTopTen')
