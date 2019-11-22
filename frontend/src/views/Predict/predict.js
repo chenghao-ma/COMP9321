@@ -23,8 +23,6 @@ import { Col,  Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import axios from 'axios';
 import Typography from '@material-ui/core/Typography';
 
-import avatar from "assets/img/faces/marc.jpg";
-
 // import {
 //     Col,
 //     Form,
@@ -79,6 +77,7 @@ export default class PredictModel extends Component{
             prediction: '1145125251'
         })
         console.log("set State")
+        console.log(this.state)
     }
       handleChange(event) {
         this.setState({
@@ -122,8 +121,8 @@ render(){
               <h4 className={useStyles.cardTitleWhite}>Model Prediction</h4>
     
             </CardHeader>
-            <CardBody>
-              <GridContainer>
+            <CardBody  style = {{fontSize:'20px'}}>
+              <GridContainer >
                
                 <GridItem xs={12} sm={12} md={5}>
                 < FormText >*Price </ FormText>
@@ -180,7 +179,7 @@ render(){
               </GridContainer>
            </CardBody>
            
-           <Button type="submit">Start Prediting</Button>
+           <Button type="submit" >Start Prediting</Button>
           </Card>
 
           </GridItem >

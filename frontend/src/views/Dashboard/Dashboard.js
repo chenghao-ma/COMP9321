@@ -169,7 +169,7 @@ export default class Dashboard extends Component{
               <CardBody>
                 <Table
                   tableHeaderColor="warning"
-                  tableHead={["Logo", "Name","Average User Rating", "Genres", "Size","Price"]}
+                  tableHead={["Logo", "Name","Average User Rating", "Genres", "Size (bytes)","Price"]}
                   tableData={this.state.topTen}
                 />
               </CardBody>
@@ -235,11 +235,10 @@ export default class Dashboard extends Component{
           <ReactSVG src = {this.state.countGeners} />
           <CardContent>
             <Typography gutterBottom variant="h5" component="h2">
-              Count how many geners in this dataset.
+              Count geners in dataset.
             </Typography>
             <Typography variant="body2" color="textSecondary" component="p">
-              Lizards are a widespread group of squamate reptiles, with over 6,000 species, ranging
-              across all continents except Antarctica
+              You can find several largest geners, the bigger area is on behalf of the more games each genre contains.
             </Typography>
           </CardContent>
         </CardActionArea>

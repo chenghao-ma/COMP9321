@@ -1,99 +1,168 @@
 from flask import Flask, jsonify
-from flask_restplus import Api, Resource, fields
+from flask_restplus import Api, Resource, fields, reqparse
 from flask import request
+from flask_cors import CORS, cross_origin
 import pymongo
 from bson.objectid import ObjectId
 from localTest import *
-import time
+import datetime
+import json
+from functools import wraps
+import jwt
 import pandas as pd
-import preprossing
 from preprossing import *
-from flask_cors import CORS, cross_origin
 import os
 import matplotlib.pyplot as matplt
-
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 db = myclient["mydatabase"]
 profile_collection = db["user_profile"]
 
+class AuthenticationToken:
+    def __init__(self,secret_key,expires_in):
+        self.secret_key = secret_key
+        self.expires_in = expires_in
+
+    def generate_token(self,username):
+        info = {
+            'username':username,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=self.expires_in)
+        }
+        return jwt.encode(info, self.secret_key, algorithm='HS256')
+
+    def validate_token(self,token):
+        info = jwt.decode(token, self.secret_key, algorithms=['HS256'])
+        return info['username']
+
+SECRET_KEY = "THIS IS THE SECRET KEY FOR COMP9321 ROUND TABLE."
+expires_in = 600
+auth = AuthenticationToken(SECRET_KEY, expires_in)
+
 
 app = Flask(__name__)
-api = Api(app, version='1.0', title='RoundTable API',
-          description='A simple API for COMP9321',
+api = Api(app, 
+            authorizations={
+                    'API-KEY':{
+                    'type': 'apiKey',
+                    'in': 'header',
+                    'name': 'AUTH-TOKEN'
+                }
+            },
+            security= 'API-KEY',
+            default='COMP9321',
+            version='1.0', 
+            title='RoundTable API',
+            description='A simple API for COMP9321',
           )
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('AUTH-TOKEN')
+        if not token:
+            abort(401, 'Authentication token is missing')
+        try:
+            user = auth.validate_token(token)
+        except Exception as e:
+            abort(401,e)
+        return f(*args, **kwargs)
+    return decorated
+
+
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}}) #sovle cors issue
-auth = api.namespace('auth', description='Auth Section')
+
 app.config['CORS_HEADERS'] = 'Content-Type'
+
+credential_parser = reqparse.RequestParser()
+credential_parser.add_argument('username', type=str)
+credential_parser.add_argument('password', type=str)
+
+
+@api.route('/token')
+class Token(Resource):
+    @api.response(200, 'Successful')
+    @api.doc(description="Generates a authentication token")
+    @api.expect(credential_parser, validate=True)
+    def get(self):
+        args = credential_parser.parse_args()
+
+        username = args.get('username')
+        password = args.get('password')
+
+        if username == 'admin' and password == 'admin':
+            return {"token": auth.generate_token(username).decode('utf-8')}
+
+        return {"message": "authorization has been refused for those credentials."}, 401
+
 # csv_data = pd.read_csv("appstore_games.csv")
-
-@auth.route('/signup')
-class Signup(Resource):
-    signup_details = api.model('signup_details', {
-        'email': fields.String(required=True, example='roundtable@unsw.com'),
-        'password': fields.String(required=True, example='123456'),
-        'first_name': fields.String(required=True, example='Dahai'),
-        'last_name': fields.String(required=True, example='Pang'),
-    })
-    @auth.expect(signup_details)
-    @auth.response(200, 'Success')
-    @auth.response(403, 'Username Taken')
-    def post(self):
-        readData = request.json
-        getData = db.user_records.find_one({'email': readData['email']})
-        if getData:
-            return {'result': 'Username Taken'}, 403
-        insertData = {'email': readData['email'],
-                      'password': readData['password'],
-                      'first_name': readData['first_name'],
-                      'last_name': readData['last_name'],
-                      }
-        db.profile_collection.insert_one(insertData)
-        return {'result': readData}
-
-
-@auth.route('/login')
-class Login(Resource):
-    login_details = api.model('login_details', {
-        'email': fields.String(required=True, example='roundtable@unsw.edu.au'),
-        'password': fields.String(required=True, example='123456')
-    })
-    @auth.expect(login_details)
-    @auth.response(200, 'Success')
-    @auth.response(403, 'Invalid username or password')
-    def post(self):
-        readData = request.json
-        getData = db.profile_collection.find_one({'email': readData['email']})
-        if getData:
-            if readData['password'] == getData['password']:
-                getData['_id'] = str(getData['_id'])
-                return {'result': getData}
-            else:
-                return {'result': 'Invalid email or password'}
-        else:
-            return {'result': 'Invalid email or password'}
+# auth = api.namespace('auth', description='Auth Section')
+# @auth.route('/signup')
+# class Signup(Resource):
+#     signup_details = api.model('signup_details', {
+#         'email': fields.String(required=True, example='roundtable@unsw.com'),
+#         'password': fields.String(required=True, example='123456'),
+#         'first_name': fields.String(required=True, example='Dahai'),
+#         'last_name': fields.String(required=True, example='Pang'),
+#     })
+#     @auth.expect(signup_details)
+#     @auth.response(200, 'Success')
+#     @auth.response(403, 'Username Taken')
+#     def post(self):
+#         readData = request.json
+#         getData = db.user_records.find_one({'email': readData['email']})
+#         if getData:
+#             return {'result': 'Username Taken'}, 403
+#         insertData = {'email': readData['email'],
+#                       'password': readData['password'],
+#                       'first_name': readData['first_name'],
+#                       'last_name': readData['last_name'],
+#                       }
+#         db.profile_collection.insert_one(insertData)
+#         return {'result': readData}
 
 
-@auth.route('/login/changePassword/<string:user_id>')
-class changePassword(Resource):
-    pass_details = api.model('pass_details', {
-        'password': fields.String(required=True, example='123456')
-    })
-    @auth.expect(pass_details)
-    @auth.response(200, 'Success')
-    @auth.response(403, 'Error')
-    def put(self, user_id):
-        readData = request.json
-        getData = db.profile_collection.find_one({'_id': ObjectId(user_id)})
-        if getData:
-            updateData = {'password': readData['password']}
-            db.profile_collection.update_one(
-                {'_id': ObjectId(user_id)},
-                {'$set': updateData}
-            )
-            return {'result': 'Success'}
-        else:
-            return {'result': 'No such user'}
+# @auth.route('/login')
+# class Login(Resource):
+#     login_details = api.model('login_details', {
+#         'email': fields.String(required=True, example='roundtable@unsw.edu.au'),
+#         'password': fields.String(required=True, example='123456')
+#     })
+#     @auth.expect(login_details)
+#     @auth.response(200, 'Success')
+#     @auth.response(403, 'Invalid username or password')
+#     def post(self):
+#         readData = request.json
+#         getData = db.profile_collection.find_one({'email': readData['email']})
+#         if getData:
+#             if readData['password'] == getData['password']:
+#                 getData['_id'] = str(getData['_id'])
+#                 return {'result': getData}
+#             else:
+#                 return {'result': 'Invalid email or password'}
+#         else:
+#             return {'result': 'Invalid email or password'}
+
+
+# @auth.route('/login/changePassword/<string:user_id>')
+# class changePassword(Resource):
+#     pass_details = api.model('pass_details', {
+#         'password': fields.String(required=True, example='123456')
+#     })
+#     @auth.expect(pass_details)
+#     @auth.response(200, 'Success')
+#     @auth.response(403, 'Error')
+#     def put(self, user_id):
+#         readData = request.json
+#         getData = db.profile_collection.find_one({'_id': ObjectId(user_id)})
+#         if getData:
+#             updateData = {'password': readData['password']}
+#             db.profile_collection.update_one(
+#                 {'_id': ObjectId(user_id)},
+#                 {'$set': updateData}
+#             )
+#             return {'result': 'Success'}
+#         else:
+#             return {'result': 'No such user'}
 
 predict = api.namespace('predict', description='predict Section')
 @predict.route('/predict')
