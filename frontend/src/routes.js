@@ -3,6 +3,10 @@ import Dashboard from "@material-ui/icons/Dashboard";
 import Person from "@material-ui/icons/Person";
 // core components/views for Admin layout
 import DashboardPage from "views/Dashboard/Dashboard.js";
+import countGenres from "views/countGenres/countGenres.js";
+import countRating from "views/countRating/countRating.js";
+import datevssize from "views/datevssize/datevssize.js";
+
 import UserProfile from "views/UserProfile/UserProfile.js";
 import Predict from "views/Predict/predict.js";
 import TableList from "views/TableList/TableList.js";
@@ -23,9 +27,30 @@ if (localStorage.getItem("userName")==null) {
   var dashboardRoutes = 
     [{
         path: "/dashboard",
-        name: "Dashboard",
+        name: "Top five rating games",
         icon: Dashboard,
         component: DashboardPage,
+        layout: "/admin"
+      },
+      {
+        path: "/countRating",
+        name: "Count ratings",
+        icon: Dashboard,
+        component: countRating,
+        layout: "/admin"
+      },
+      {
+        path: "/countGenres",
+        name: "Count different genres",
+        icon: Dashboard,
+        component: countGenres,
+        layout: "/admin"
+      },
+      {
+        path: "/datevssize",
+        name: "Trend of date and size",
+        icon: Dashboard,
+        component: datevssize,
         layout: "/admin"
       },
       {
@@ -53,9 +78,22 @@ if (localStorage.getItem("userName")==null) {
   var dashboardRoutes = 
     [{
         path: "/dashboard",
-        name: "Dashboard",
+        name: "Top five rating games",
         icon: Dashboard,
         component: DashboardPage,
+        layout: "/admin"
+      },
+      {
+        path: "/countRating",
+        name: "Count ratings",
+        icon: Dashboard,
+        component: countRating,
+        layout: "/admin"
+      }, {
+        path: "/countGenres",
+        name: "Count different genres",
+        icon: Dashboard,
+        component: countGenres,
         layout: "/admin"
       },
       {

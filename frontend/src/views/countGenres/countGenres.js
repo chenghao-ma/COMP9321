@@ -82,27 +82,25 @@ export default class Dashboard extends Component{
       "AUTH-TOKEN": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNTc0NDcxOTIwfQ.pH9psTxJ7S5zW9rtcyx2he-QsKMULw6vYAMzsxXD-Hc",
     }
     const method = "GET";
+    path = 'category';
     await api.apiRequest(path, {
       headers,
       method,
     }).then((res) => {
-      console.log(res.result);
-      var result  = [];
-      res.result.forEach(element => {
-        let resultObj = [];
-        let icon = <CardMedia>
-          < Avatar src={element["Icon URL"]} alt="..." />
-          </CardMedia>
-        // console.log(element["Icon URL"]);
-        let name = element["Name"];
-        let rating = element["Rating"];
-        let genres = element["Genres"];
-        let size = element["App Size"];
-        let price = element["Price"];
-        resultObj = [icon,name,rating,genres,size,price]
-        result.push(resultObj);
+      console.log(res.result)
+      this.setState({
+        categoryChart: require('./categoryChart.svg')
       })
-      this.setState({topFive:result})
+    });
+    path = 'countGeners';
+    await api.apiRequest(path, {
+      headers,
+      method,
+    }).then((res) => {
+      console.log(res.result)
+      this.setState({
+        countGeners: require('./countGeners.svg')
+      })
     });
     // console.log(result)
     this.setState({isLoading:false})
@@ -119,25 +117,41 @@ export default class Dashboard extends Component{
     return (
 
       <div>
-        <GridContainer>
-        
-          <GridItem xs={12} sm={12} md={12}>
-            <Card>
-              <CardHeader color="warning">
-                <h4 className={useStyles.cardTitleWhite}>Top Rating APPS</h4>
-                <p className={useStyles.cardCategoryWhite}>
-                  {/* 1th September, 2016 */}
-                </p>
-              </CardHeader>
-
-              <CardBody>
-                <Table
-                  tableHeaderColor="warning"
-                  tableHead={["Logo", "Name","Average User Rating", "Genres", "Size (bytes)","Price"]}
-                  tableData={this.state.topFive}
-                />
-              </CardBody>
-            </Card>
+        < GridContainer direction = "column"
+        alignItems = "center"
+        justify = "center" >
+          
+        <GridItem xs={12} sm={12} md={8}>
+          <Card>
+        <CardActionArea>
+          <ReactSVG src = {this.state.categoryChart} />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              Category Pie Chart
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              This is a pie chart shows the category distribution in this dataset.
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      
+      </Card>
+          </GridItem>
+          <GridItem xs={12} sm={12} md={6}>
+          <Card>
+        <CardActionArea>
+          <ReactSVG src = {this.state.countGeners} />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              Count geners in dataset.
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              You can find several largest geners, the bigger area is on behalf of the more games each genre contains.
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      
+      </Card>
           </GridItem>
         </GridContainer>
       </div>

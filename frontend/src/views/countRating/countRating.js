@@ -82,27 +82,15 @@ export default class Dashboard extends Component{
       "AUTH-TOKEN": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNTc0NDcxOTIwfQ.pH9psTxJ7S5zW9rtcyx2he-QsKMULw6vYAMzsxXD-Hc",
     }
     const method = "GET";
+    path = 'avgUserRating';
     await api.apiRequest(path, {
       headers,
       method,
     }).then((res) => {
-      console.log(res.result);
-      var result  = [];
-      res.result.forEach(element => {
-        let resultObj = [];
-        let icon = <CardMedia>
-          < Avatar src={element["Icon URL"]} alt="..." />
-          </CardMedia>
-        // console.log(element["Icon URL"]);
-        let name = element["Name"];
-        let rating = element["Rating"];
-        let genres = element["Genres"];
-        let size = element["App Size"];
-        let price = element["Price"];
-        resultObj = [icon,name,rating,genres,size,price]
-        result.push(resultObj);
+      console.log(res.result)
+      this.setState({
+        avgUserRating: require('./avgUserRating.svg')
       })
-      this.setState({topFive:result})
     });
     // console.log(result)
     this.setState({isLoading:false})
@@ -119,25 +107,24 @@ export default class Dashboard extends Component{
     return (
 
       <div>
-        <GridContainer>
-        
-          <GridItem xs={12} sm={12} md={12}>
-            <Card>
-              <CardHeader color="warning">
-                <h4 className={useStyles.cardTitleWhite}>Top Rating APPS</h4>
-                <p className={useStyles.cardCategoryWhite}>
-                  {/* 1th September, 2016 */}
-                </p>
-              </CardHeader>
-
-              <CardBody>
-                <Table
-                  tableHeaderColor="warning"
-                  tableHead={["Logo", "Name","Average User Rating", "Genres", "Size (bytes)","Price"]}
-                  tableData={this.state.topFive}
-                />
-              </CardBody>
-            </Card>
+        < GridContainer direction = "column"
+        alignItems = "center"
+        justify = "center" >
+          <GridItem xs={12} sm={12} md={7}>
+          <Card>
+        <CardActionArea>
+          <ReactSVG src = {this.state.avgUserRating} />
+          <CardContent>
+            <Typography gutterBottom variant="h5" component="h2">
+              Average User Rating
+            </Typography>
+            <Typography variant="body2" color="textSecondary" component="p">
+              This graph shows the count of different ratings. Most game apps are rated around 4.5
+            </Typography>
+          </CardContent>
+        </CardActionArea>
+      
+      </Card>
           </GridItem>
         </GridContainer>
       </div>

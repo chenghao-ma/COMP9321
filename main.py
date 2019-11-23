@@ -42,13 +42,13 @@ auth = AuthenticationToken(SECRET_KEY, expires_in)
 app = Flask(__name__)
 api = Api(app, 
             authorizations={
-                    'API-KEY':{
-                    'type': 'apiKey',
-                    'in': 'header',
-                    'name': 'AUTH-TOKEN'
-                }
+                    'TOKEN-BASED':{
+                        "type": 'apiKey',
+                        "name": "API-TOKEN",
+                        "in": "header"
+                    }
             },
-            security= 'API-KEY',
+            security= 'TOKEN-BASED',
             default='COMP9321 assignment 2',
             version='1.0', 
             title='RoundTable API',
