@@ -49,7 +49,7 @@ api = Api(app,
                 }
             },
             security= 'API-KEY',
-            default='COMP9321',
+            default='COMP9321 assignment 2',
             version='1.0', 
             title='RoundTable API',
             description='A simple API for COMP9321',
@@ -94,82 +94,88 @@ class Token(Resource):
 
         return {"message": "authorization has been refused for those credentials."}, 401
 
-# csv_data = pd.read_csv("appstore_games.csv")
-# auth = api.namespace('auth', description='Auth Section')
-# @auth.route('/signup')
-# class Signup(Resource):
-#     signup_details = api.model('signup_details', {
-#         'email': fields.String(required=True, example='roundtable@unsw.com'),
-#         'password': fields.String(required=True, example='123456'),
-#         'first_name': fields.String(required=True, example='Dahai'),
-#         'last_name': fields.String(required=True, example='Pang'),
-#     })
-#     @auth.expect(signup_details)
-#     @auth.response(200, 'Success')
-#     @auth.response(403, 'Username Taken')
-#     def post(self):
-#         readData = request.json
-#         getData = db.user_records.find_one({'email': readData['email']})
-#         if getData:
-#             return {'result': 'Username Taken'}, 403
-#         insertData = {'email': readData['email'],
-#                       'password': readData['password'],
-#                       'first_name': readData['first_name'],
-#                       'last_name': readData['last_name'],
-#                       }
-#         db.profile_collection.insert_one(insertData)
-#         return {'result': readData}
+csv_data = pd.read_csv("appstore_games.csv")
+@api.route('/signup')
+class Signup(Resource):
+    signup_details = api.model('signup_details', {
+        'email': fields.String(required=True, example='roundtable@unsw.com'),
+        'password': fields.String(required=True, example='123456'),
+        'first_name': fields.String(required=True, example='Dahai'),
+        'last_name': fields.String(required=True, example='Pang'),
+    })
+    @api.expect(signup_details)
+    @api.response(200, 'Success')
+    @api.response(403, 'Username Taken')
+    def post(self):
+        readData = request.json
+        getData = db.user_records.find_one({'email': readData['email']})
+        if getData:
+            return {'result': 'Username Taken'}, 403
+        insertData = {'email': readData['email'],
+                      'password': readData['password'],
+                      'first_name': readData['first_name'],
+                      'last_name': readData['last_name'],
+                      }
+        db.profile_collection.insert_one(insertData)
+        return {'result': readData}
 
 
-# @auth.route('/login')
-# class Login(Resource):
-#     login_details = api.model('login_details', {
-#         'email': fields.String(required=True, example='roundtable@unsw.edu.au'),
-#         'password': fields.String(required=True, example='123456')
-#     })
-#     @auth.expect(login_details)
-#     @auth.response(200, 'Success')
-#     @auth.response(403, 'Invalid username or password')
-#     def post(self):
-#         readData = request.json
-#         getData = db.profile_collection.find_one({'email': readData['email']})
-#         if getData:
-#             if readData['password'] == getData['password']:
-#                 getData['_id'] = str(getData['_id'])
-#                 return {'result': getData}
-#             else:
-#                 return {'result': 'Invalid email or password'}
-#         else:
-#             return {'result': 'Invalid email or password'}
+@api.route('/login')
+class Login(Resource):
+    login_details = api.model('login_details', {
+        'email': fields.String(required=True, example='roundtable@unsw.edu.au'),
+        'password': fields.String(required=True, example='123456')
+    })
+    @api.expect(login_details)
+    @api.response(200, 'Success')
+    @api.response(403, 'Invalid username or password')
+    def post(self):
+        readData = request.json
+        getData = db.profile_collection.find_one({'email': readData['email']})
+        if getData:
+            if readData['password'] == getData['password']:
+                getData['_id'] = str(getData['_id'])
+                return {'result': getData}
+            else:
+                return {'result': 'Invalid email or password'}
+        else:
+            return {'result': 'Invalid email or password'}
 
 
-# @auth.route('/login/changePassword/<string:user_id>')
-# class changePassword(Resource):
-#     pass_details = api.model('pass_details', {
-#         'password': fields.String(required=True, example='123456')
-#     })
-#     @auth.expect(pass_details)
-#     @auth.response(200, 'Success')
-#     @auth.response(403, 'Error')
-#     def put(self, user_id):
-#         readData = request.json
-#         getData = db.profile_collection.find_one({'_id': ObjectId(user_id)})
-#         if getData:
-#             updateData = {'password': readData['password']}
-#             db.profile_collection.update_one(
-#                 {'_id': ObjectId(user_id)},
-#                 {'$set': updateData}
-#             )
-#             return {'result': 'Success'}
-#         else:
-#             return {'result': 'No such user'}
+@api.route('/login/changePassword/<string:user_id>')
+class changePassword(Resource):
+    pass_details = api.model('pass_details', {
+        'password': fields.String(required=True, example='123456')
+    })
+    @api.expect(pass_details)
+    @api.response(200, 'Success')
+    @api.response(403, 'Error')
+    def put(self, user_id):
+        readData = request.json
+        getData = db.profile_collection.find_one({'_id': ObjectId(user_id)})
+        if getData:
+            updateData = {'password': readData['password']}
+            db.profile_collection.update_one(
+                {'_id': ObjectId(user_id)},
+                {'$set': updateData}
+            )
+            return {'result': 'Success'}
+        else:
+            return {'result': 'No such user'}
 
-predict = api.namespace('predict', description='predict Section')
-@predict.route('/predict')
+@api.route('/predict')
 class predict(Resource):
-
-    @predict.response(200, 'Success')
-    @predict.response(403, 'Error')
+    predict_details = api.model('predict_details', {
+        'price': fields.String(required=True, example='1.99'),
+        'ageRating': fields.String(required=True, example='4+'),
+        'size': fields.String(required=True, example='100000'),
+        'genres': fields.String(required=True, example='Strategy'),
+    })
+    @api.expect(predict_details)
+    @api.response(200, 'Success')
+    @api.response(403, 'Error')
+    @api.doc(description="predict the rating of a game based on price, age, size and genres.")
+    # @api.expect(predict_parser, validate=True)
     def post(self):
         try:
             price = request.args.get("price")
@@ -181,11 +187,11 @@ class predict(Resource):
         except Exception as e:
             return e
 
-show = api.namespace('show', description='dataset presentation')
-@show.route('/avgUserRating')
+@api.route('/avgUserRating')
 class avgUserRating(Resource):
-    @show.response(200, 'Success')
-    @show.response(403, 'Error')
+    @api.response(200, 'Success')
+    @api.response(403, 'Error')
+    @api.doc(description="generate a bar chart to show average rating.")
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         aur = csv_data['Average User Rating'].value_counts().sort_index()
@@ -202,11 +208,11 @@ class avgUserRating(Resource):
         else:
             export_svgs(p, filename = 'frontend/src/views/Dashboard/avgUserRating.svg')
             return {'result': 'avgUserRating success'}
-@show.route('/countGeners')
+@api.route('/countGeners')
 class getImages(Resource):
-
-    @show.response(200, 'Success')
-    @show.response(403, 'Error')
+    @api.doc(description="Generates a graph to show game counts in differnet geners.")
+    @api.response(200, 'Success')
+    @api.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         genres = pd.DataFrame({ 'category' : csv_data["Genres"]})
@@ -238,11 +244,11 @@ class getImages(Resource):
             matplt.savefig('frontend/src/views/Dashboard/countGeners.svg')
             return {'result': 'countGeners success'}
 
-@show.route('/category')
+@api.route('/category')
 class getCategory(Resource):
-
-    @show.response(200, 'Success')
-    @show.response(403, 'Error')
+    @api.doc(description="Generates a graph to show different category.")
+    @api.response(200, 'Success')
+    @api.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
@@ -284,11 +290,11 @@ class getCategory(Resource):
             export_svgs(p, filename = 'frontend/src/views/Dashboard/categoryChart.svg')
             return {'result': 'categoryChart success'}
 
-@show.route('/dateVsAppSize')
+@api.route('/dateVsAppSize')
 class getCount(Resource):
-
-    @show.response(200, 'Success')
-    @show.response(403, 'Error')
+    @api.doc(description="Show the trend of date and size.")
+    @api.response(200, 'Success')
+    @api.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         csv_data['Original Release Date'] = pd.to_datetime(csv_data['Original Release Date'], format = '%d/%m/%Y')
@@ -318,11 +324,11 @@ class getCount(Resource):
 
 
 
-@show.route('/getTopTen')
+@api.route('/getTopFive')
 class getTopTen(Resource):
-
-    @show.response(200, 'Success')
-    @show.response(403, 'Error')
+    @api.doc(description="Search the top five games according to rating.")
+    @api.response(200, 'Success')
+    @api.response(403, 'Error')
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         csv_data['User Rating Count'] = csv_data['User Rating Count'].fillna(0)

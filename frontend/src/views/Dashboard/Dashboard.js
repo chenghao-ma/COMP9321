@@ -58,7 +58,7 @@ export default class Dashboard extends Component{
     super(props);
     this.state = {
       isLoading:true,
-      topTen:[],
+      topFive:[],
       avgUserRating:null,
       dateVsAppSize:null,
       category:null,
@@ -69,7 +69,7 @@ export default class Dashboard extends Component{
   }
 
   async componentWillMount() {
-    var path = 'show/getTopTen';
+    var path = 'show/getTopFive';
     // console.log(path)
     var headers = {
       Accept: "application/json",
@@ -96,7 +96,7 @@ export default class Dashboard extends Component{
         resultObj = [icon,name,rating,genres,size,price]
         result.push(resultObj);
       })
-      this.setState({topTen:result})
+      this.setState({topFive:result})
     });
       
     path = 'show/dateVsAppSize';
@@ -141,7 +141,6 @@ export default class Dashboard extends Component{
     });
     // console.log(result)
     this.setState({isLoading:false})
-      // console.log(this.state.topTen[0][0])
     
     };
 
@@ -170,7 +169,7 @@ export default class Dashboard extends Component{
                 <Table
                   tableHeaderColor="warning"
                   tableHead={["Logo", "Name","Average User Rating", "Genres", "Size (bytes)","Price"]}
-                  tableData={this.state.topTen}
+                  tableData={this.state.topFive}
                 />
               </CardBody>
             </Card>
