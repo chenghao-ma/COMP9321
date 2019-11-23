@@ -22,7 +22,8 @@ import CardFooter from "components/Card/CardFooter.js";
 import { Col,  Form, FormGroup, Label, Input, FormText } from 'reactstrap';
 import axios from 'axios';
 import Typography from '@material-ui/core/Typography';
-
+import API from "../api";
+const api = new API();
 // import {
 //     Col,
 //     Form,
@@ -71,14 +72,29 @@ export default class PredictModel extends Component{
         this.getPrediction= this.getPrediction.bind(this);
       }
     
-      getPrediction()
+      async getPrediction()
       {
-        this.setState({
-            prediction: '1145125251'
-        })
-        console.log("set State")
-        console.log(this.state)
-    }
+        var path = 'predict';
+        const method = 'POST';
+        var headers = {
+            Accept: "application/json",
+            "Content-Type": "application/json",}
+        const body = {
+          "price": this.state.price,
+          "ageRating": this.state.ageRating,
+          "size": this.state.size,
+          "genres": this.state.genres,
+        }
+        await api.apiRequest(path, {
+            headers,
+            method,
+            body: JSON.stringify(body)
+          }).then((res) => {
+            this.setState({
+              prediction: res.result
+            })
+              console.log(res)
+    })}
       handleChange(event) {
         this.setState({
             [event.target.name]: event.target.value
@@ -108,6 +124,9 @@ export default class PredictModel extends Component{
   
     
 render(){
+  const category = 'Genre_Action, Genre_Adventure ,  Genre_Board , Genre_Books ,  Genre_Business ,  Genre_Card ,  Genre_Casino ,  Genre_Casual , Genre_Education ,  Genre_Entertainment ,  Genre_Family ,  Genre_Finance ,  Genre_Food&Drink , Genre_Health&Fitness ,  Genre_Lifestyle ,  Genre_Magazines&Newspapers ,  Genre_Medical , Genre_Music ,  Genre_Navigation ,  Genre_News ,  Genre_Photo&Video ,  Genre_Productivity , Genre_Puzzle ,  Genre_Racing ,  Genre_Reference ,  Genre_RolePlaying ,  Genre_Shopping , Genre_Simulation ,  Genre_SocialNetworking ,  Genre_Sports ,  Genre_Stickers ,  Genre_Strategy , Genre_Travel ,  Genre_Trivia ,  Genre_Utilities , Genre_Word'
+  ;
+  const age = 'Age_12+, Age_17+, Age_4+, Age_9+';
   return (
         
     <div >
@@ -175,7 +194,14 @@ render(){
                  
                   />
                 </GridItem>
-              
+                <GridItem xs={12} sm={12} md={12}><p>Genres should be selected from following list:</p>
+                </GridItem>
+                <GridItem xs={12} sm={12} md={12}>{category}
+                </GridItem>
+                <GridItem xs={12} sm={12} md={12} ><p>ageRating should be selected from following list:</p>
+                </GridItem>
+                <GridItem xs={12} sm={12} md={12}>{age}
+                </GridItem>
               </GridContainer>
            </CardBody>
            

@@ -182,10 +182,31 @@ class predict(Resource):
             ageRating = request.args.get("ageRating")
             size = request.args.get("size")
             genres = request.args.get("genres")
+            return {'result':'12331'}
             # return callPredict(price,ageRating,size,genres)
             return ml(price,ageRating,size,genres)
         except Exception as e:
             return e
+
+@api.route('/gameVsLanguage')
+class gameVsLanguage(Resource):
+    @api.response(200, 'Success')
+    @api.response(403, 'Error')
+    def get(self):
+        mergedDF = pd.read_csv("appstore_games_languages.csv")
+        json_file = []
+        for index,row in mergedDF.iterrows():
+            # print(row)
+            json_file.append({
+                "Icon URL" : row["Icon URL"],
+                "Names" : row["Names"],
+                "Genres" : row["Genres"],
+                "Price" : row["Price"],
+                "Total(million)" : row["Total(million)"],
+                "Languages" : row["Languages"]
+            })
+        print(json_file)
+        return {"result" : jsonify(json_file)}
 
 @api.route('/avgUserRating')
 class avgUserRating(Resource):
