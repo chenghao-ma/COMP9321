@@ -69,7 +69,7 @@ export default class Dashboard extends Component{
   }
 
   async componentWillMount() {
-    var path = 'getTopFive';
+    var path = 'potentialCustomer';
     // console.log(path)
     var headers = {
       Accept: "application/json",
@@ -82,37 +82,33 @@ export default class Dashboard extends Component{
       "AUTH-TOKEN": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNTc0NDcxOTIwfQ.pH9psTxJ7S5zW9rtcyx2he-QsKMULw6vYAMzsxXD-Hc",
     }
     const method = "GET";
-    path = 'avgUserRating';
     await api.apiRequest(path, {
       headers,
       method,
     }).then((res) => {
-      console.log(res.result)
-      this.setState({
-        avgUserRating: require('./avgUserRating.svg')
+      console.log(res.result);
+      var result  = [];
+      res.result.forEach(element => {
+        let resultObj = [];
+        let icon = <CardMedia>
+          < Avatar src={element["Icon URL"]} alt="..." />
+          </CardMedia>
+        // console.log(element["Icon URL"]);
+        // "Icon URL": row["Icon URL"],
+        //   "Names": row["Names"],
+        //   "Genres": row["Genres"],
+        //   "Price": row["Price"],
+        //   "Total(million)": row["Total(million)"],
+        //   "Languages": row["Languages"]
+        let name = element["Name"];
+        let genres = element["Genres"];
+        let size = element["Total(million)"];
+        let price = element["Price"];
+        let languages = element["Languages"]
+        resultObj = [icon,name,genres,size,price,languages]
+        result.push(resultObj);
       })
-    });
-
-    path = 'avgUserRatingFreeGames';
-    await api.apiRequest(path, {
-      headers,
-      method,
-    }).then((res) => {
-      console.log(res.result)
-      this.setState({
-        avgUserRatingFree: require('./avgUserRatingFree.svg')
-      })
-    });
-
-    path = 'avgUserRatingPaidGames';
-    await api.apiRequest(path, {
-      headers,
-      method,
-    }).then((res) => {
-      console.log(res.result)
-      this.setState({
-        avgUserRatingPaid: require('./avgUserRatingPaid.svg')
-      })
+      this.setState({topFive:result})
     });
     // console.log(result)
     this.setState({isLoading:false})
@@ -129,56 +125,25 @@ export default class Dashboard extends Component{
     return (
 
       <div>
-        < GridContainer direction = "column"
-        alignItems = "center"
-        justify = "center" >
-          <GridItem xs={12} sm={12} md={7}>
-          <Card>
-        <CardActionArea>
-          <ReactSVG src = {this.state.avgUserRating} />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              Average User Rating of all games
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              This graph shows the count of different ratings. Most game apps are rated around 4.5
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-      
-      </Card>
-          </GridItem>
-          <GridItem xs={12} sm={12} md={7}>
-          <Card>
-        <CardActionArea>
-          <ReactSVG src = {this.state.avgUserRatingFree} />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              Average User Rating of free games
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              This graph shows the count of different ratings. Most game apps are rated around 4.5
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-      
-      </Card>
-          </GridItem>
-          <GridItem xs={12} sm={12} md={7}>
-          <Card>
-        <CardActionArea>
-          <ReactSVG src = {this.state.avgUserRatingPaid} />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="h2">
-              Average User Rating of paid games
-            </Typography>
-            <Typography variant="body2" color="textSecondary" component="p">
-              This graph shows the count of different ratings. Most game apps are rated around 4.5
-            </Typography>
-          </CardContent>
-        </CardActionArea>
-      
-      </Card>
+        <GridContainer>
+        
+          <GridItem xs={12} sm={12} md={12}>
+            <Card>
+              <CardHeader color="warning">
+                <h4 className={useStyles.cardTitleWhite}>Potential User Number</h4>
+                <p className={useStyles.cardCategoryWhite}>
+                  {/* 1th September, 2016 */}
+                </p>
+              </CardHeader>
+
+              <CardBody>
+                <Table
+                  tableHeaderColor="warning"
+                  tableHead={["Logo", "Name", "Genres", "Potential users(million)", "Price", "Languages"]} //[icon,name,genres,size,price,languages]
+                  tableData={this.state.topFive}
+                />
+              </CardBody>
+            </Card>
           </GridItem>
         </GridContainer>
       </div>

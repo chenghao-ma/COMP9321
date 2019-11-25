@@ -69,56 +69,42 @@ export default class PredictModel extends Component{
     
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-        this.getPrediction= this.getPrediction.bind(this);
+        // this.getPrediction= this.getPrediction.bind(this);
       }
     
-      async getPrediction()
-      {
-        var path = 'predict';
-        const method = 'POST';
-        var headers = {
-            Accept: "application/json",
-            "Content-Type": "application/json",}
-        const body = {
-          "price": this.state.price,
-          "ageRating": this.state.ageRating,
-          "size": this.state.size,
-          "genres": this.state.genres,
-        }
-        await api.apiRequest(path, {
-            headers,
-            method,
-            body: JSON.stringify(body)
-          }).then((res) => {
-            this.setState({
-              prediction: res.result
-            })
-              console.log(res)
-    })}
       handleChange(event) {
         this.setState({
             [event.target.name]: event.target.value
         })
+        console.log(this.state)
         // console.log(this.state.value)
       }
     handleSubmit = event => {
         event.preventDefault();
-    
-        // const user = {
-        //   genres: this.state.genres,
-        //   Price:this.state.Price,
-        //   ageRating: this.state.ageRating,
-        //   size: this.state.size,
-          
-
-        // };
-    
-        // axios.post(`https://jsonplaceholder.typicode.com/users`, { user })
-        //   .then(res => {
-        //     console.log(res);
-        //     console.log(res.data);
-        //   })
-       this.getPrediction()
+       var path = 'predict';
+       const method = 'POST';
+       var headers = {
+         Accept: "application/json",
+         "Content-Type": "application/json",
+       }
+       const body = {
+         "price": this.state.Price,
+         "ageRating": this.state.ageRating,
+         "size": this.state.size,
+         "genres": this.state.genres,
+       }
+       console.log(body)
+       api.apiRequest(path, {
+         headers,
+         method,
+         body: JSON.stringify(body)
+       }).then((res) => {
+         this.setState({
+           prediction: res.result
+         })
+        //  console.log(res)
+       })
+       
       }
     
   

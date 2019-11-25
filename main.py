@@ -13,6 +13,14 @@ import pandas as pd
 from preprossing import *
 import os
 import matplotlib.pyplot as matplt
+import numpy as np 
+# import missingno as msno
+import matplotlib.pyplot as plt
+import re
+from sklearn.preprocessing import Imputer
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn import neighbors
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 db = myclient["mydatabase"]
@@ -167,9 +175,9 @@ class changePassword(Resource):
 class predict(Resource):
     predict_details = api.model('predict_details', {
         'price': fields.String(required=True, example='1.99'),
-        'ageRating': fields.String(required=True, example='4+'),
+        'ageRating': fields.String(required=True, example='Age_17+'),
         'size': fields.String(required=True, example='100000'),
-        'genres': fields.String(required=True, example='Strategy'),
+        'genres': fields.String(required=True, example='Genre_RolePlaying'),
     })
     @api.expect(predict_details)
     @api.response(200, 'Success')
@@ -177,21 +185,63 @@ class predict(Resource):
     @api.doc(description="predict the rating of a game based on price, age, size and genres.")
     # @api.expect(predict_parser, validate=True)
     def post(self):
-        try:
-            price = request.args.get("price")
-            ageRating = request.args.get("ageRating")
-            size = request.args.get("size")
-            genres = request.args.get("genres")
-            return {'result':'12331'}
-            # return callPredict(price,ageRating,size,genres)
-            return ml(price,ageRating,size,genres)
-        except Exception as e:
-            return e
+        readData = request.json
+        price = readData["price"]
+        ageRating = readData["ageRating"]
+        size = readData["size"]
+        genres = readData["genres"]
+        result = ml(price,ageRating,size,genres)
+        print(type(result))
+        return {"result": result}
 
-@api.route('/gameVsLanguage')
+
+def generatePredictArray(colName, price,ageRating,size,genres):
+	l = []
+	dic = { "Price" : price, "Size" : size, ageRating : 1, genres : 1}
+	for i in colName:
+		if i in dic:
+			if i in ["Price"]:
+				l.append(float(dic[i]))
+			else:
+				l.append(dic[i])
+		else:
+			l.append(0)
+	print(l)
+	return np.array([l])
+    
+def ml(price,ageRating,size,genres):
+	feature_cols = ['Price', 'Size','Genre_Action'	,'Genre_Adventure',	'Genre_Board',\
+		'Genre_Books',	'Genre_Business'	,'Genre_Card'	,'Genre_Casino', 'Genre_Casual',\
+		'Genre_Education'	,'Genre_Entertainment'	,'Genre_Family',	'Genre_Finance'	,'Genre_Food&Drink',\
+		'Genre_Health&Fitness'	,'Genre_Lifestyle'	,'Genre_Magazines&Newspapers',	'Genre_Medical',\
+		'Genre_Music'	,'Genre_Navigation'	,'Genre_News'	,'Genre_Photo&Video',	'Genre_Productivity',\
+		'Genre_Puzzle'	,'Genre_Racing'	,'Genre_Reference'	,'Genre_RolePlaying',	'Genre_Shopping',\
+		'Genre_Simulation',	'Genre_SocialNetworking',	'Genre_Sports',	'Genre_Stickers',	'Genre_Strategy',\
+		'Genre_Travel',	'Genre_Trivia',	'Genre_Utilities',	'Genre_Word',\
+		'Age_12+'	,'Age_17+',	'Age_4+'	,'Age_9+']
+
+	df = pd.read_csv('newdata.csv',thousands = ',')
+
+	# print(df)
+	x = df[feature_cols]
+	y = df['Average User Rating']	
+	# print(y.shape)
+	x_train, x_test, y_train, y_test = train_test_split(x, y, random_state=1)
+	print(type(x_test))
+	linreg = neighbors.KNeighborsRegressor()
+	linreg.fit(x_train, y_train)
+
+	my_test = generatePredictArray(feature_cols,price,ageRating,size,genres)
+	# my_test = np.array([[float(284),float(1.99),float(12328960)]])
+	y_pred = linreg.predict(my_test)
+	print(y_pred[0])
+	return str(y_pred[0])
+
+@api.route('/potentialCustomer')
 class gameVsLanguage(Resource):
     @api.response(200, 'Success')
     @api.response(403, 'Error')
+    @api.doc(description="Show the games with the most potential customers")
     def get(self):
         mergedDF = pd.read_csv("appstore_games_languages.csv")
         json_file = []
@@ -205,8 +255,56 @@ class gameVsLanguage(Resource):
                 "Total(million)" : row["Total(million)"],
                 "Languages" : row["Languages"]
             })
-        print(json_file)
-        return {"result" : jsonify(json_file)}
+        # print(json_file)
+        return {"result" : json_file}
+
+@api.route('/avgUserRatingFreeGames')
+class avgUserRatingVSfree(Resource):
+    @api.response(200, 'Success')
+    @api.response(403, 'Error')
+    @api.doc(description="Show the average user rating in free games.")
+    def get(self):
+        csv_data = pd.read_csv("appstore_games.csv")
+        csv_data = csv_data[csv_data["Price"]==0]
+        aur = csv_data['Average User Rating'].value_counts().sort_index()
+        # create bokeh figure for containing bar chart
+        p = figure(x_range=list(map(str,aur.index.values)), plot_height=250, title="Average User Rating VS Free", toolbar_location=None, tools = "")
+        
+        # create bar chart with x (rating 4.0 4.5...) and y (numbers)
+        p.vbar(x=list(map(str,aur.index.values)),top=aur.values,width=0.9,color="firebrick")
+        p.xgrid.grid_line_color = None
+        p.y_range.start=0
+        p.output_backend = 'svg'
+        if os.path.exists('frontend/src/views/countRating/avgUserRatingFree.svg'):
+            return {'result': 'avgUserRatingFree has been exported'}
+        else:
+            export_svgs(p, filename = 'frontend/src/views/countRating/avgUserRatingFree.svg')
+            return {'result': 'avgUserRatingFree success'}
+
+
+@api.route('/avgUserRatingPaidGames')
+class avgUserRatingVSpaid(Resource):
+    @api.response(200, 'Success')
+    @api.response(403, 'Error')
+    @api.doc(description="Show the average user rating in paid games.")
+    def get(self):
+        csv_data = pd.read_csv("appstore_games.csv")
+        csv_data = csv_data[csv_data["Price"]>0]
+        aur = csv_data['Average User Rating'].value_counts().sort_index()
+        # create bokeh figure for containing bar chart
+        p = figure(x_range=list(map(str,aur.index.values)), plot_height=250, title="Average User Rating VS Paid", toolbar_location=None, tools = "")
+        
+        # create bar chart with x (rating 4.0 4.5...) and y (numbers)
+        p.vbar(x=list(map(str,aur.index.values)),top=aur.values,width=0.9,color="green")
+        p.xgrid.grid_line_color = None
+        p.y_range.start=0
+        p.output_backend = 'svg'
+        if os.path.exists('frontend/src/views/countRating/avgUserRatingPaid.svg'):
+            return {'result': 'avgUserRatingPaid has been exported'}
+        else:
+            export_svgs(p, filename = 'frontend/src/views/countRating/avgUserRatingPaid.svg')
+            return {'result': 'avgUserRatingPaid success'}
+
 
 @api.route('/avgUserRating')
 class avgUserRating(Resource):
@@ -224,11 +322,65 @@ class avgUserRating(Resource):
         p.xgrid.grid_line_color = None
         p.y_range.start=0
         p.output_backend = 'svg'
-        if os.path.exists('frontend/src/views/Dashboard/avgUserRating.svg'):
+        if os.path.exists('frontend/src/views/countRating/avgUserRating.svg'):
             return {'result': 'avgUserRating has been exported'}
         else:
-            export_svgs(p, filename = 'frontend/src/views/Dashboard/avgUserRating.svg')
+            export_svgs(p, filename = 'frontend/src/views/countRating/avgUserRating.svg')
             return {'result': 'avgUserRating success'}
+
+def sim(p,a,g):
+    csv_data = pd.read_csv("appstore_games.csv")
+    
+    csv_data = csv_data.drop(['URL','ID','Subtitle','In-app Purchases','Description','Developer','Original Release Date','Current Version Release Date','Primary Genre'], axis=1)
+    
+    csv_data = csv_data.drop('Genres', axis=1).join(csv_data['Genres'].str.split(', ',expand=True).stack().reset_index(level=1, drop=True).rename('Genre'))
+    csv_data.index = range(len(csv_data))
+    csv_data = csv_data[csv_data["Price"]==float(p)]
+    csv_data = csv_data[csv_data["Age Rating"]==a[4:]]
+    csv_data = csv_data.loc[csv_data["Genre"]==g]
+    csv_data = csv_data.dropna()
+    # print(csv_data)
+    # print(csv_data.head())
+    
+    csv_data = csv_data.sort_values(["Average User Rating"], ascending=False)
+    csv_data = csv_data[:10]
+    # print(csv_data)
+    return csv_data
+    
+
+@api.route('/searchAttribute')
+class avgUserRatingVSpaid(Resource):
+    search_details = api.model('search_details', {
+        'price': fields.String(required=True, example='0'),
+        'ageRating': fields.String(required=True, example='Age_4+'),
+        'genres': fields.String(required=True, example='Strategy'),
+    })
+    @api.expect(search_details)
+    @api.response(200, 'Success')
+    @api.response(403, 'Error')
+    @api.doc(description="Show the top ten games in selected attributes.")
+    def post(self):
+        readData = request.json
+        price = readData["price"]
+        ageRating = readData["ageRating"]
+        genres = readData["genres"]
+        similarTop = sim(price,ageRating,genres)
+        json_file = []
+        for index,row in similarTop.iterrows():
+    
+            json_file.append({
+                "Icon URL" : row["Icon URL"],
+                "Name" : row["Name"],
+                "Genre" : row["Genre"],
+                "Price" : row["Price"],
+                "Size" : row["Size"],
+                "AgeRating" : row["Age Rating"],
+                "AverageUserRating" : row["Average User Rating"]
+            })
+        print(json_file)
+        return {"result" : json_file}
+
+
 @api.route('/countGeners')
 class getImages(Resource):
     @api.doc(description="Generates a graph to show game counts in differnet geners.")
@@ -362,10 +514,10 @@ class getTopTen(Resource):
         
         # pick top 10 rows
         final = final[:5]
-        print(final)
+        # print(final)
         json_file = []
         for index,row in final.iterrows():
-            print(row[1])
+            # print(row[1])
             json_file.append({
             "Icon URL" : row[0],
             "Name" : row[1],
@@ -374,7 +526,7 @@ class getTopTen(Resource):
             "App Size" : row["Size"],
             "Rating" : row["Average User Rating"]
             })
-        print(json_file)
+        # print(json_file)
         # global csv_data
         return {"result" :json_file}
 

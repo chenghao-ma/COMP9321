@@ -6,13 +6,13 @@ import DashboardPage from "views/Dashboard/Dashboard.js";
 import countGenres from "views/countGenres/countGenres.js";
 import countRating from "views/countRating/countRating.js";
 import datevssize from "views/datevssize/datevssize.js";
-
+import potentialCustomer from "views/potentialCustomer/potentialCustomer.js";
+import similarTop10 from "views/similarTop10/similarTop10.js";
 import UserProfile from "views/UserProfile/UserProfile.js";
 import Predict from "views/Predict/predict.js";
 import TableList from "views/TableList/TableList.js";
 import Typography from "views/Typography/Typography.js";
 import Icons from "views/Icons/Icons.js";
-import Maps from "views/Maps/Maps.js";
 import NotificationsPage from "views/Notifications/Notifications.js";
 // core components/views for RTL layout
 import RTLPage from "views/RTLPage/RTLPage.js";
@@ -54,10 +54,24 @@ if (localStorage.getItem("userName")==null) {
         layout: "/admin"
       },
       {
+        path: "/potentialCustomer",
+        name: "Largest potential customers",
+        icon: Dashboard,
+        component: potentialCustomer,
+        layout: "/admin"
+      },
+      {
         path: "/predict",
         name: "Predict",
         icon: LibraryBooks,
         component: Predict,
+        layout: "/admin"
+      },
+      {
+        path: "/searchAttribute",
+        name: "Search by attribute",
+        icon: LibraryBooks,
+        component: similarTop10,
         layout: "/admin"
       },
       {
@@ -89,11 +103,26 @@ if (localStorage.getItem("userName")==null) {
         icon: Dashboard,
         component: countRating,
         layout: "/admin"
-      }, {
+      },
+      {
         path: "/countGenres",
         name: "Count different genres",
         icon: Dashboard,
         component: countGenres,
+        layout: "/admin"
+      },
+      {
+        path: "/datevssize",
+        name: "Trend of date and size",
+        icon: Dashboard,
+        component: datevssize,
+        layout: "/admin"
+      },
+      {
+        path: "/potentialCustomer",
+        name: "Largest potential customers",
+        icon: Dashboard,
+        component: potentialCustomer,
         layout: "/admin"
       },
       {
