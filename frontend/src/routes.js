@@ -23,65 +23,9 @@ import ExitToApp from "@material-ui/icons/ExitToApp";
 import LoginPage from "views/Login/LoginPage.js";
 
 
-if (localStorage.getItem("userName")==null) {
+if (localStorage.getItem("isLogin")!='1') {
   var dashboardRoutes = 
-    [{
-        path: "/dashboard",
-        name: "Top five rating games",
-        icon: Dashboard,
-        component: DashboardPage,
-        layout: "/admin"
-      },
-      {
-        path: "/countRating",
-        name: "Count ratings",
-        icon: Dashboard,
-        component: countRating,
-        layout: "/admin"
-      },
-      {
-        path: "/countGenres",
-        name: "Count different genres",
-        icon: Dashboard,
-        component: countGenres,
-        layout: "/admin"
-      },
-      {
-        path: "/datevssize",
-        name: "Trend of date and size",
-        icon: Dashboard,
-        component: datevssize,
-        layout: "/admin"
-      },
-      {
-        path: "/potentialCustomer",
-        name: "Largest potential customers",
-        icon: Dashboard,
-        component: potentialCustomer,
-        layout: "/admin"
-      },
-      {
-        path: "/predict",
-        name: "Predict",
-        icon: LibraryBooks,
-        component: Predict,
-        layout: "/admin"
-      },
-      {
-        path: "/searchAttribute",
-        name: "Search by attribute",
-        icon: LibraryBooks,
-        component: similarTop10,
-        layout: "/admin"
-      },
-      {
-        path: "/signup",
-        name: "Sign Up",
-        icon: Fingerprint,
-        component: SignupPage,
-        layout: "/admin"
-      },
-      {
+      [{
         path: "/login",
         name: "Login",
         icon: ExitToApp,
@@ -133,12 +77,20 @@ if (localStorage.getItem("userName")==null) {
         layout: "/admin"
       },
       {
+        path: "/searchAttribute",
+        name: "Search by attribute",
+        icon: LibraryBooks,
+        component: similarTop10,
+        layout: "/admin"
+      },
+      {
         path: "/user",
         name: "User Profile",
         icon: Person,
         component: UserProfile,
         layout: "/admin"
-      },]
+      },
+    ]
   
 }
 

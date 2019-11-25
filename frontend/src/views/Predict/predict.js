@@ -81,11 +81,13 @@ export default class PredictModel extends Component{
       }
     handleSubmit = event => {
         event.preventDefault();
+        const token = localStorage.getItem('token')
        var path = 'predict';
        const method = 'POST';
        var headers = {
          Accept: "application/json",
          "Content-Type": "application/json",
+         "AUTH-TOKEN":token,
        }
        const body = {
          "price": this.state.Price,
@@ -170,7 +172,7 @@ render(){
                   />
                 </GridItem>
                 <GridItem xs={12} sm={12} md={5}>
-                < FormText>*size </ FormText>
+                < FormText>*size (unit:MB) </ FormText>
                 <Input
             
                     id="size"

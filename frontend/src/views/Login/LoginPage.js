@@ -23,29 +23,30 @@ function sleep() {
 function login_submit(){
     const email_value = document.getElementById('email').value;
     const password_value = document.getElementById('password').value;
-    const path = 'auth/login';
+    const path = 'login';
     const headers = {
         Accept: "application/json",
         "Content-Type": "application/json"
     }
     const method = "POST";
     const body = {
-        "email": email_value,
+        "username": email_value,
         "password": password_value
     }
+    console.log(body)
     api.apiRequest(path,{
         headers,
         method,
         body: JSON.stringify(body)
     }).then(function (res) {
         // console.log(res.result)
-        if (res.result == 'Invalid email or password'){
-                alert('Wrong Password');
+        if (res.message == 'Sorry'){
+                alert('authorization has been refused for those credentials.');
         }
         else{
             localStorage.clear()
             localStorage.setItem('isLogin','1')
-            localStorage.setItem('userName', JSON.stringify(res.result));
+            localStorage.setItem('token', res.message);
             alert('Successfully Login')
             setTimeout("window.location.href='/admin/dashboard'", 1000)
         }

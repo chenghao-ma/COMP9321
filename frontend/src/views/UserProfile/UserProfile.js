@@ -37,48 +37,6 @@ const styles = {
     textDecoration: "none"
   }
 };
-const userInfo = JSON.parse(localStorage.getItem('userName'));
-function changePro_submit() {
-  // Defining const with input
-  const Orignial_password_value = document.getElementById('Orignial_password').value;
-  const password_value = document.getElementById('password').value;
-  const password_confirm_value = document.getElementById('password_confirm').value;
-  
-  // if no input,raise error
-  if (Orignial_password_value == '') {
-    alert('Please enter the original password.')
-    return
-  }
-  if (Orignial_password_value != userInfo.password) {
-    alert('Wrong original password.')
-    return
-  }
-  if (password_value != password_confirm_value) {
-    alert('Different confirm password.')
-    return
-  }
-  // got password value and update it in database
-  const path = 'auth/login/changePassword/' + userInfo._id;
-  console.log(path)
-  const headers = {
-    Accept: "application/json",
-    "Content-Type": "application/json"
-  }
-  const method = "PUT";
-  const body = {
-    "password": password_value
-  }
-  api.apiRequest(path, {
-    headers,
-    method,
-    body: JSON.stringify(body)
-  }).then(function (res) {
-    console.log(res)
-  });
-  alert('Successfully change password.');
-  localStorage.clear()
-  setTimeout("window.location.href='/admin/login'", 1000)
-}
 
 const useStyles = makeStyles(styles);
 
@@ -86,74 +44,9 @@ export default function UserProfile() {
   const classes = useStyles();
   return (
       <GridContainer>
-        <GridItem xs={12} sm={12} md={12}>
-          <Card>
-            <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>Edit Profile</h4>
-              <p className={classes.cardCategoryWhite}>Complete your profile</p>
-            </CardHeader>
-            <CardBody>
-              <GridContainer>
-                
-                <GridItem xs={12} sm={12} md={3}>
-                  <CustomInput
-                    labelText={userInfo["first_name"]+' '+userInfo["last_name"]}
-                    id="username"
-                    formControlProps={{
-                      fullWidth: true
-                    }}
-                    inputProps={{
-                      disabled: true
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText={userInfo["email"]}
-                    id="email-address"
-                    formControlProps={{
-                      fullWidth: true
-                    }}
-                    inputProps={{
-                      disabled: true
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={5}>
-                  <CustomInput
-                    labelText="orignial password"
-                    id = "Orignial_password"
-                    formControlProps={{
-                      fullWidth: true
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem md={4}>
-                  <CustomInput
-                    id="password"
-                    labelText="new password"
-                    formControlProps={{
-                      fullWidth: true
-                    }}
-                  />
-                  <CustomInput
-                   id = "password_confirm"
-                   labelText = "confirm your new password"
-                   formControlProps={{
-                      fullWidth: true
-                    }}
-                   />
-                </GridItem>
-              </GridContainer>
-            </CardBody>
             <CardFooter>
-              <Button color="primary" onClick={() => changePro_submit()}>Update Profile</Button>
               <Button color="danger" onClick={()=>{localStorage.clear();window.location.href='/admin/dashboard'}}  >Logout</Button>
             </CardFooter>
-          </Card>
-        </GridItem>
       </GridContainer>
   );
 }

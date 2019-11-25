@@ -69,17 +69,13 @@ export default class Dashboard extends Component{
   }
 
   async componentWillMount() {
+    const token = localStorage.getItem('token')
     var path = 'getTopFive';
     // console.log(path)
     var headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': 'Origin, Content-Type, X-Auth-Token, Authorization',
-      'Access-Control-Allow-Methods': 'GET, POST, PATCH, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Credentials': 'true',
-
-      "AUTH-TOKEN": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNTc0NDcxOTIwfQ.pH9psTxJ7S5zW9rtcyx2he-QsKMULw6vYAMzsxXD-Hc",
+      "AUTH-TOKEN": token,
     }
     const method = "GET";
     path = 'category';

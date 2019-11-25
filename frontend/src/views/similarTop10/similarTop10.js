@@ -77,11 +77,13 @@ export default class Dashboard extends Component{
   }
   handleSubmit = event => {
     event.preventDefault();
+    const token = localStorage.getItem('token')
     var path = 'searchAttribute';
     const method = 'POST';
     var headers = {
       Accept: "application/json",
       "Content-Type": "application/json",
+      "AUTH-TOKEN":token,
     }
     const body = {
       "price": this.state.Price,

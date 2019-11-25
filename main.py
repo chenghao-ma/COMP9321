@@ -1,5 +1,5 @@
 from flask import Flask, jsonify
-from flask_restplus import Api, Resource, fields, reqparse
+from flask_restplus import Api, Resource, fields, reqparse, abort
 from flask import request
 from flask_cors import CORS, cross_origin
 import pymongo
@@ -43,20 +43,20 @@ class AuthenticationToken:
         return info['username']
 
 SECRET_KEY = "THIS IS THE SECRET KEY FOR COMP9321 ROUND TABLE."
-expires_in = 600
+expires_in = 60000
 auth = AuthenticationToken(SECRET_KEY, expires_in)
 
 
 app = Flask(__name__)
 api = Api(app, 
             authorizations={
-                    'TOKEN-BASED':{
+                    'API-KEY':{
                         "type": 'apiKey',
-                        "name": "API-TOKEN",
+                        "name": "AUTH-TOKEN",
                         "in": "header"
                     }
             },
-            security= 'TOKEN-BASED',
+            security= 'API-KEY',
             default='COMP9321 assignment 2',
             version='1.0', 
             title='RoundTable API',
@@ -100,32 +100,9 @@ class Token(Resource):
         if username == 'admin' and password == 'admin':
             return {"token": auth.generate_token(username).decode('utf-8')}
 
-        return {"message": "authorization has been refused for those credentials."}, 401
+        return {"message": "Sorry"}
 
 csv_data = pd.read_csv("appstore_games.csv")
-@api.route('/signup')
-class Signup(Resource):
-    signup_details = api.model('signup_details', {
-        'email': fields.String(required=True, example='roundtable@unsw.com'),
-        'password': fields.String(required=True, example='123456'),
-        'first_name': fields.String(required=True, example='Dahai'),
-        'last_name': fields.String(required=True, example='Pang'),
-    })
-    @api.expect(signup_details)
-    @api.response(200, 'Success')
-    @api.response(403, 'Username Taken')
-    def post(self):
-        readData = request.json
-        getData = db.user_records.find_one({'email': readData['email']})
-        if getData:
-            return {'result': 'Username Taken'}, 403
-        insertData = {'email': readData['email'],
-                      'password': readData['password'],
-                      'first_name': readData['first_name'],
-                      'last_name': readData['last_name'],
-                      }
-        db.profile_collection.insert_one(insertData)
-        return {'result': readData}
 
 
 @api.route('/login')
@@ -139,16 +116,13 @@ class Login(Resource):
     @api.response(403, 'Invalid username or password')
     def post(self):
         readData = request.json
-        getData = db.profile_collection.find_one({'email': readData['email']})
-        if getData:
-            if readData['password'] == getData['password']:
-                getData['_id'] = str(getData['_id'])
-                return {'result': getData}
-            else:
-                return {'result': 'Invalid email or password'}
-        else:
-            return {'result': 'Invalid email or password'}
+        username = readData['username']
+        password = readData['password']
 
+        if username == 'admin' and password == 'admin':
+            return {"message": auth.generate_token(username).decode('utf-8')}
+
+        return {"message": "Sorry"}
 
 @api.route('/login/changePassword/<string:user_id>')
 class changePassword(Resource):
@@ -158,6 +132,7 @@ class changePassword(Resource):
     @api.expect(pass_details)
     @api.response(200, 'Success')
     @api.response(403, 'Error')
+    @requires_auth
     def put(self, user_id):
         readData = request.json
         getData = db.profile_collection.find_one({'_id': ObjectId(user_id)})
@@ -182,6 +157,7 @@ class predict(Resource):
     @api.expect(predict_details)
     @api.response(200, 'Success')
     @api.response(403, 'Error')
+    @requires_auth
     @api.doc(description="predict the rating of a game based on price, age, size and genres.")
     # @api.expect(predict_parser, validate=True)
     def post(self):
@@ -241,6 +217,7 @@ def ml(price,ageRating,size,genres):
 class gameVsLanguage(Resource):
     @api.response(200, 'Success')
     @api.response(403, 'Error')
+    @requires_auth
     @api.doc(description="Show the games with the most potential customers")
     def get(self):
         mergedDF = pd.read_csv("appstore_games_languages.csv")
@@ -262,6 +239,7 @@ class gameVsLanguage(Resource):
 class avgUserRatingVSfree(Resource):
     @api.response(200, 'Success')
     @api.response(403, 'Error')
+    @requires_auth
     @api.doc(description="Show the average user rating in free games.")
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
@@ -286,6 +264,7 @@ class avgUserRatingVSfree(Resource):
 class avgUserRatingVSpaid(Resource):
     @api.response(200, 'Success')
     @api.response(403, 'Error')
+    @requires_auth
     @api.doc(description="Show the average user rating in paid games.")
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
@@ -310,6 +289,7 @@ class avgUserRatingVSpaid(Resource):
 class avgUserRating(Resource):
     @api.response(200, 'Success')
     @api.response(403, 'Error')
+    @requires_auth
     @api.doc(description="generate a bar chart to show average rating.")
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
@@ -356,6 +336,7 @@ class avgUserRatingVSpaid(Resource):
         'genres': fields.String(required=True, example='Strategy'),
     })
     @api.expect(search_details)
+    @requires_auth
     @api.response(200, 'Success')
     @api.response(403, 'Error')
     @api.doc(description="Show the top ten games in selected attributes.")
@@ -386,6 +367,7 @@ class getImages(Resource):
     @api.doc(description="Generates a graph to show game counts in differnet geners.")
     @api.response(200, 'Success')
     @api.response(403, 'Error')
+    @requires_auth
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         genres = pd.DataFrame({ 'category' : csv_data["Genres"]})
@@ -422,6 +404,7 @@ class getCategory(Resource):
     @api.doc(description="Generates a graph to show different category.")
     @api.response(200, 'Success')
     @api.response(403, 'Error')
+    @requires_auth
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         # global csv_data
@@ -468,6 +451,7 @@ class getCount(Resource):
     @api.doc(description="Show the trend of date and size.")
     @api.response(200, 'Success')
     @api.response(403, 'Error')
+    @requires_auth
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         csv_data['Original Release Date'] = pd.to_datetime(csv_data['Original Release Date'], format = '%d/%m/%Y')
@@ -502,6 +486,7 @@ class getTopTen(Resource):
     @api.doc(description="Search the top five games according to rating.")
     @api.response(200, 'Success')
     @api.response(403, 'Error')
+    @requires_auth
     def get(self):
         csv_data = pd.read_csv("appstore_games.csv")
         csv_data['User Rating Count'] = csv_data['User Rating Count'].fillna(0)
