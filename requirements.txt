@@ -4,7 +4,7 @@ bokeh==1.4.0
 Click==7.0
 cycler==0.10.0
 Flask==1.1.1
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
 flask-restplus==0.13.0
 importlib-metadata==0.23
 itsdangerous==1.1.0
